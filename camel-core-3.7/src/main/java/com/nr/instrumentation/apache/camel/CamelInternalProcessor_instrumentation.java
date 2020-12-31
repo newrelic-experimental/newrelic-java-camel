@@ -26,21 +26,9 @@ public abstract class CamelInternalProcessor_instrumentation {
 		if(token != null) {
 			token.link();
 		}
+		
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","CamelInternalProcessor","process",exchange.getFromRouteId());
 
-		Endpoint endpoint = exchange.getFromEndpoint();
-		if(endpoint != null) {
-			String endpointURI = endpoint.getEndpointUri();
-			if(endpointURI != null && !endpointURI.isEmpty()) {
-				URI uri = URI.create(endpointURI);
-				if(uri != null) {
-					Message inMessage = exchange.getIn();
-					InboundMessageWrapper msgWrapper = new InboundMessageWrapper(inMessage);
-					HttpParameters params = HttpParameters.library("Camel").uri(uri).procedure("process").inboundHeaders(msgWrapper).build();
-					NewRelic.getAgent().getTracedMethod().reportAsExternal(params);
-				}
-
-			}
-		}
 		String exchangeID = exchange != null ? exchange.getExchangeId() : null;
 		if(exchangeID != null) {
 			NewRelic.addCustomParameter("Exchange ID", exchangeID);
