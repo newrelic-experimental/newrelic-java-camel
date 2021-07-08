@@ -1,9 +1,6 @@
 .java-version
-.gradle
-gradlew.bat
-gradlew
-gradle/**
 .settings
+.git
 .classpath
 .project
 build
