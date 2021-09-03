@@ -22,5 +22,5 @@ jar {
 }
 
 verifyInstrumentation {
-  passes 'org.apache.camel:camel-core:[3.7.0,)'
+  passes 'org.apache.camel:camel-core:[3.7.0,3.7.2)'
 }

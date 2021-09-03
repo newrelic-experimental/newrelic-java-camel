@@ -2,6 +2,7 @@ package com.nr.instrumentation.apache.camel;
 
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.Exchange;
+import org.apache.camel.processor.ProcessorExchangePair;
 
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
@@ -18,7 +19,28 @@ public abstract class MultiCastProcessor_instrumentation {
 		if(token != null) {
 			token.link();
 		}
-		
+
 		return Weaver.callOriginal();
+	}
+
+	@Weave(originalName="org.apache.camel.processor.MulticastProcessor$MulticastState")
+	protected static class MulticastState {
+		
+		final Exchange original = Weaver.callOriginal();
+		
+		MulticastState(Exchange original, Iterable<ProcessorExchangePair> pairs, AsyncCallback callback) {
+			
+		}
+		
+		@Trace(async=true)
+		public void run() {
+			Token token = original.getProperty(Util.NRTOKENPROPERTY,Token.class);
+			if(token != null) {
+				token.link();
+			}
+			
+			Weaver.callOriginal();
+		}
+
 	}
 }

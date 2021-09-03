@@ -48,7 +48,7 @@ public abstract class ChoiceProcessor_instrumentation {
 		if(routeID != null && !routeID.isEmpty()) {
 			NewRelic.addCustomParameter("From Route ID", routeID);
 			NewRelic.getAgent().getTracedMethod().setMetricName(new String[] {"Custom",classname,"process",routeID});
-			NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_HIGH, true, "ChoiceProcessor", new String[] {"ChoiceProcessor",routeID});
+			NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_LOW, false, "ChoiceProcessor", new String[] {"ChoiceProcessor",routeID});
 		}
 		CamelContext context = exchange.getContext();
 		String ctxName = context != null ? context.getName() : null;

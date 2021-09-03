@@ -1,6 +1,7 @@
 package com.nr.instrumentation.apache.camel;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.AsyncProcessor;
@@ -18,7 +19,7 @@ public class NRAsyncProcessorWrapper extends NRProcessorWrapper implements Async
 	}
 
 	@Override
-	@Trace(async=true)
+	@Trace(dispatcher=true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
 		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
 

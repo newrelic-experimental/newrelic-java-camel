@@ -1,65 +1,58 @@
 package com.nr.instrumentation.apache.camel;
 
 import java.lang.reflect.Method;
-import java.util.logging.Level;
+import java.util.List;
 
-import com.newrelic.api.agent.Logger;
+import org.apache.camel.Exchange;
+import org.apache.camel.ExtendedExchange;
+import org.apache.camel.spi.Synchronization;
+
 import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Token;
 
 public class Util {
-   private static Logger logger = NewRelic.getAgent()
-      .getLogger();
-   private static boolean Production = true;
-   private static Level configLogLevel = Level.INFO;
-   
-   public static final String NRTOKENPROPERTY = "newrelic.asynctoken";
 
-   static {
-      try {
-         configLogLevel = Level.parse(NewRelic.getAgent()
-            .getConfig()
-            .getValue("log_level", "INFO")
-            .toUpperCase()
-            .trim());
-         if (configLogLevel.intValue() <= Level.FINE.intValue())
-            Production = false;
-      } catch (Exception e) {
-         log(Level.INFO, "Unable to configure logging level: {0} message: {1} using INFO", NewRelic.getAgent()
-            .getConfig()
-            .getValue("log_level"), e.getMessage());
-      }
-   }
+	public static final String NRTOKENPROPERTY = "newrelic.asynctoken";
 
-   public static void log(Level level, String format, Object... args) {
-      if (configLogLevel.intValue() >= level.intValue())
-         try {
-            logger.log(level, format, args);
-         } catch (Exception e) {
-            logger.log(level, e, "{0}", e.getMessage());
-         }
-   }
+	public static String getMethodName(Method m) {
+		if(m == null) return "UnknownClass.UnknownMethod";
 
-   public static void trace() {
-      if (Production)
-         return;
-      StackTraceElement[] ste = Thread.currentThread()
-         .getStackTrace();
-      for (int i = 2; i < ste.length; i++)
-         log(Level.FINE, "trace: {0}: {1}", i, ste[i].toString());
-   }
+		String classname = m.getDeclaringClass().getSimpleName();
+		String methodName = m.getName();
 
+		return classname + "." + methodName;
+	}
 
+	public static void addCompletionIfNeeded(ExtendedExchange exchange) {
+		if(exchange == null) return;
 
-   public static void log(Level level, Exception e, String format, Object... args) {
-      logger.log(level, e, format, args);
-   }
-   
-   public static String getMethodName(Method m) {
-	   if(m == null) return "UnknownClass.UnknownMethod";
-	   
-	   String classname = m.getDeclaringClass().getSimpleName();
-	   String methodName = m.getName();
-	   
-	   return classname + "." + methodName;
-   }
+		List<Synchronization> completions = exchange.handoverCompletions();
+		if(completions == null || completions.isEmpty()) {
+			NRSynchronization nrSync = new NRSynchronization();
+			exchange.addOnCompletion(nrSync);
+		} else {
+			boolean hasNR = false;
+			for(int i=0; i<completions.size() && !hasNR; i++) {
+				Synchronization sync = completions.get(i);
+				hasNR = sync instanceof NRSynchronization;
+			}
+			if(!hasNR) {
+				NRSynchronization nrSync = new NRSynchronization();
+				exchange.addOnCompletion(nrSync);
+			}
+		}
+	}
+
+	public static void addNewToken(Exchange exchange) {
+		Token token = NewRelic.getAgent().getTransaction().getToken();
+		if(token != null && token.isActive()) {
+			exchange.setProperty(NRTOKENPROPERTY, token);
+		} else {
+			if(token != null) {
+				token.expire();
+				token = null;
+			}
+			exchange.removeProperty(NRTOKENPROPERTY);
+		}
+	}
 }
