@@ -11,16 +11,28 @@ import com.nr.instrumentation.apache.camel.NRRunnable;
 public class ReactiveExecutor {
 	
 	public void schedule(Runnable runnable, String description) {
-		if(!(runnable instanceof NRRunnable)) {
-			Token t = NewRelic.getAgent().getTransaction().getToken();
-			if(t != null && t.isActive()) {
-				runnable = new NRRunnable(runnable,t);
-			} else if(t != null) {
-				t.expire();
-				t = null;
-			}
-		}
+//		if(!(runnable instanceof NRRunnable)) {
+//			Token t = NewRelic.getAgent().getTransaction().getToken();
+//			if(t != null && t.isActive()) {
+//				runnable = new NRRunnable(runnable,t);
+//			} else if(t != null) {
+//				t.expire();
+//				t = null;
+//			}
+//		}
 		Weaver.callOriginal();
 	}
 
+	public void scheduleMain(Runnable runnable, String description) {
+//		if(!(runnable instanceof NRRunnable)) {
+//			Token t = NewRelic.getAgent().getTransaction().getToken();
+//			if(t != null && t.isActive()) {
+//				runnable = new NRRunnable(runnable,t);
+//			} else if(t != null) {
+//				t.expire();
+//				t = null;
+//			}
+//		}
+		Weaver.callOriginal();
+	}
 }

@@ -7,7 +7,6 @@ import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.weaver.MatchType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
-import com.nr.instrumentation.apache.camel.NRSynchronization;
 import com.nr.instrumentation.apache.camel.Util;
 
 @Weave(type=MatchType.BaseClass)
@@ -24,7 +23,7 @@ public abstract class DefaultProducer {
 				token.expire();
 			}
 		}
-		exchange.addOnCompletion(new NRSynchronization());
+		Util.addCompletionIfNeeded(exchange);
 		
 		return exchange;
 	}

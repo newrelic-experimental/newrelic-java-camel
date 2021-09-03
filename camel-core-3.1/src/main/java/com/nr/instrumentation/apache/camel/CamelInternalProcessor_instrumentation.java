@@ -21,7 +21,9 @@ public abstract class CamelInternalProcessor_instrumentation {
 			token.link();
 		}
 		
-		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","CamelInternalProcessor","process",exchange.getFromRouteId());
+		if(exchange != null && exchange.getFromRouteId() != null) {
+			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","CamelInternalProcessor","process",exchange.getFromRouteId());
+		}
 
 		String exchangeID = exchange != null ? exchange.getExchangeId() : null;
 		if(exchangeID != null) {

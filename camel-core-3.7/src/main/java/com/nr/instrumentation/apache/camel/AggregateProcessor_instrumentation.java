@@ -6,6 +6,7 @@ import org.apache.camel.Exchange;
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
+import com.newrelic.api.agent.TransactionNamePriority;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
 
@@ -18,6 +19,7 @@ public abstract class AggregateProcessor_instrumentation {
 		if(routeID != null && !routeID.isEmpty()) {
 			NewRelic.addCustomParameter("From Route ID", routeID);
 			NewRelic.getAgent().getTracedMethod().setMetricName(new String[] {"Custom","AggregateProcessor","doProcess",routeID});
+			NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_LOW, false, "CamelProcessor", new String[] {"AggregateProcessor",routeID});
 		}
 		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
 		if(token != null) {
@@ -33,6 +35,7 @@ public abstract class AggregateProcessor_instrumentation {
 		if(routeID != null && !routeID.isEmpty()) {
 			NewRelic.addCustomParameter("From Route ID", routeID);
 			NewRelic.getAgent().getTracedMethod().setMetricName(new String[] {"Custom","AggregateProcessor","doProcess",routeID});
+			NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_LOW, false, "CamelProcessor", new String[] {"AggregateProcessor",routeID});
 		}
 		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
 		if(token != null) {

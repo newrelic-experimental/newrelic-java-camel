@@ -20,6 +20,14 @@ public abstract class Pipeline_instrumentation {
 
 		if(token != null) {
 			token.link();
+		} else {
+			Token t = NewRelic.getAgent().getTransaction().getToken();
+			if(t != null && t.isActive()) {
+				exchange.setProperty(Util.NRTOKENPROPERTY, t);
+			} else if(t != null) {
+				t.expire();
+				t = null;
+			}
 		}
 		if(id != null) {
 			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Pipeline","process",id);
@@ -27,6 +35,24 @@ public abstract class Pipeline_instrumentation {
 			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Pipeline","process");
 		}
 		return Weaver.callOriginal();
+	}
+	
+	@Weave(originalName="org.apache.camel.processor.Pipeline$PipelineTask")
+	private static class PipelineTask {
+		private final Exchange exchange = Weaver.callOriginal();
+		
+		@Trace(async=true)
+		public void run() {
+			if(exchange != null) {
+				Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
+
+				if(token != null) {
+					token.link();
+				}
+			
+			}
+			Weaver.callOriginal();
+		}
 	}
 	
 }

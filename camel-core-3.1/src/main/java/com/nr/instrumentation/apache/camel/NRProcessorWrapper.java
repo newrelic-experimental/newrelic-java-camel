@@ -32,7 +32,11 @@ public class NRProcessorWrapper implements Processor {
 		if(token != null) {
 			token.link();
 		}
-		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Processor",delegate.getClass().getSimpleName(),"process",route.getId());
+		if(route != null) {
+			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Processor",delegate.getClass().getSimpleName(),"process",route.getId());
+		} else {
+			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Processor",delegate.getClass().getSimpleName(),"process");
+		}
 		if(delegate != null) {
 			delegate.process(exchange);
 		}

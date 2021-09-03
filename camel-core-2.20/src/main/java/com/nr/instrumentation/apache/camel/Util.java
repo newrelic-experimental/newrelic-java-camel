@@ -23,6 +23,7 @@ public class Util {
    }
    
    public static void addCompletionIfNeeded(Exchange exchange) {
+	   if(exchange == null) return;
 	   List<Synchronization> completions = exchange.handoverCompletions();
 	   if(completions == null || completions.isEmpty()) {
 		   NRSynchronization nrSync = new NRSynchronization();
