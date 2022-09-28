@@ -1,7 +1,8 @@
 package com.nr.instrumentation.apache.camel;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.AsyncProcessor;
@@ -21,6 +22,9 @@ public class NRAsyncProcessorWrapper extends NRProcessorWrapper implements Async
 	@Override
 	@Trace(dispatcher=true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+		Util.recordExchange(attributes, exchange);
+		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
 		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
 
 		if(token != null) {
@@ -29,7 +33,13 @@ public class NRAsyncProcessorWrapper extends NRProcessorWrapper implements Async
 
 		String[] names;
 		if(route != null) {
-			names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process",route.getId()};
+			String routeId = route.getId();
+			if(routeId != null && !routeId.isEmpty()) {
+				names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process",routeId};
+				NewRelic.getAgent().getTracedMethod().addCustomAttribute("RouteId", routeId);
+			} else {
+				names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process"};
+			}
 		} else {
 			names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process"};
 			

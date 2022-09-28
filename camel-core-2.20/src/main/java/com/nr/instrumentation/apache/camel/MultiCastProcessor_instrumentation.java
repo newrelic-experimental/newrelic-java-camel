@@ -1,6 +1,8 @@
 package com.nr.instrumentation.apache.camel;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.camel.AsyncCallback;
@@ -21,6 +23,9 @@ public abstract class MultiCastProcessor_instrumentation {
 
 	@Trace(async=true)
 	protected void doProcessParallel(Exchange original, AtomicExchange result, Iterable<ProcessorExchangePair> pairs,boolean streaming, AsyncCallback callback) {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+		Util.recordExchange(attributes, original);
+		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
 
 		Token token = original.getProperty(Util.NRTOKENPROPERTY,Token.class);
 
@@ -39,6 +44,9 @@ public abstract class MultiCastProcessor_instrumentation {
 	@Trace(async=true)
 	protected boolean doProcessSequential(Exchange original, AtomicExchange result, Iterable<ProcessorExchangePair> pairs, AsyncCallback callback) {
 		Token token = original.getProperty(Util.NRTOKENPROPERTY,Token.class);
+		Map<String, Object> attributes = new HashMap<String, Object>();
+		Util.recordExchange(attributes, original);
+		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
 
 		if(token != null) {
 			token.link();
@@ -65,6 +73,9 @@ public abstract class MultiCastProcessor_instrumentation {
 
 		@Trace(async=true)
 		public void run() {
+			Map<String, Object> attributes = new HashMap<String, Object>();
+			Util.recordExchange(attributes, original);
+			NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
 			Token token = original.getProperty(Util.NRTOKENPROPERTY, Token.class);
 			if(token != null) {
 				token.link();
@@ -82,6 +93,9 @@ public abstract class MultiCastProcessor_instrumentation {
 
 		@Trace(async=true)
 		public void run() {
+			Map<String, Object> attributes = new HashMap<String, Object>();
+			Util.recordExchange(attributes, original);
+			NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
 			Token token = original.getProperty(Util.NRTOKENPROPERTY, Token.class);
 			if(token != null) {
 				token.link();

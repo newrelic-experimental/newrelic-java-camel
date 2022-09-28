@@ -1,5 +1,7 @@
 package org.apache.camel.impl.engine;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.Endpoint;
@@ -21,6 +23,9 @@ public abstract class DefaultProducerTemplate {
 
 	@Trace(dispatcher=true)
 	protected CompletableFuture<Exchange> asyncSendExchange(Endpoint endpoint, ExchangePattern pattern, Processor processor, Processor resultProcessor,Exchange inExchange) {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+		Util.recordExchange(attributes, inExchange);
+		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
 		Token token = (Token) inExchange.getProperty(Util.NRTOKENPROPERTY);
 		if(token == null) {
 			token = NewRelic.getAgent().getTransaction().getToken();
@@ -45,6 +50,9 @@ public abstract class DefaultProducerTemplate {
 
 	@Trace(dispatcher=true)
 	public Exchange send(Endpoint endpoint, Exchange exchange, Processor resultProcessor) {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+		Util.recordExchange(attributes, exchange);
+		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
 		Token token = (Token) exchange.getProperty(Util.NRTOKENPROPERTY);
 		if(token == null) {
 			token = NewRelic.getAgent().getTransaction().getToken();
@@ -59,6 +67,7 @@ public abstract class DefaultProducerTemplate {
 			String uri = endpoint.getEndpointUri();
 			if(uri != null && !uri.isEmpty()) {
 				NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_LOW, false, "Producer", "Custom","Producer",uri);
+				NewRelic.getAgent().getTracedMethod().addCustomAttribute("EndpointURI", uri);
 			}
 		}
 		if(resultProcessor != null && !(resultProcessor instanceof NRProcessorWrapper)) {

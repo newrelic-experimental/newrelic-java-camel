@@ -1,5 +1,8 @@
 package com.nr.instrumentation.apache.camel;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.Route;
@@ -27,13 +30,23 @@ public class NRProcessorWrapper implements Processor {
 	@Override
 	@Trace(async=true)
 	public void process(Exchange exchange) throws Exception {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+		Util.recordExchange(attributes, exchange);
+		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
 		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
 
 		if(token != null) {
 			token.link();
 		}
 		if(route != null) {
-			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Processor",delegate.getClass().getSimpleName(),"process",route.getId());
+			String routeId = route.getId();
+			if(routeId != null && !routeId.isEmpty()) {
+				NewRelic.getAgent().getTracedMethod().addCustomAttribute("RouteId", routeId);
+				NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Processor",delegate.getClass().getSimpleName(),"process",routeId);
+			} else {
+				NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Processor",delegate.getClass().getSimpleName(),"process");
+			}
+			
 		} else {
 			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Processor",delegate.getClass().getSimpleName(),"process");
 		}

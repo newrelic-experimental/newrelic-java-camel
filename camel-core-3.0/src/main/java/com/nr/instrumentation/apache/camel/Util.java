@@ -2,7 +2,10 @@ package com.nr.instrumentation.apache.camel;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.spi.Synchronization;
 
@@ -54,4 +57,26 @@ public class Util {
 			exchange.removeProperty(NRTOKENPROPERTY);
 		}
 	}
+	
+	public static void recordExchange(Map<String, Object> attributes, Exchange exchange) {
+		if(exchange != null) {
+			recordValue(attributes, "ExchangeId", exchange.getExchangeId());
+			CamelContext context = exchange.getContext();
+			String ctxName = context != null ? context.getName() : null;
+			recordValue(attributes, "CamelContextName", ctxName);
+			recordValue(attributes, "CamelContextManagementName", context.getManagementName());
+			Endpoint endpoint = exchange.getFromEndpoint();
+			if(endpoint != null) {
+				recordValue(attributes, "From_EndPointURI", endpoint.getEndpointUri());
+			}
+			recordValue(attributes, "FromRouteId", exchange.getFromRouteId());
+		}
+	}
+	
+	private static void recordValue(Map<String,Object> attributes, String key, Object value) {
+		if(key != null && !key.isEmpty() && value != null) {
+			attributes.put(key, value);
+		}
+	}
+	
 }

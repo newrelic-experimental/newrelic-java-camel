@@ -1,9 +1,12 @@
 package com.nr.instrumentation.apache.camel;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.Exchange;
-import org.apache.camel.processor.ProcessorExchangePair;
 
+import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
 import com.newrelic.api.agent.weaver.MatchType;
@@ -15,6 +18,9 @@ public abstract class MultiCastProcessor_instrumentation {
 
 	@Trace(async=true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+		Util.recordExchange(attributes, exchange);
+		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
 		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
 		if(token != null) {
 			token.link();
@@ -29,11 +35,6 @@ public abstract class MultiCastProcessor_instrumentation {
 		
 		@Trace(async=true)
 		public void run() {
-//			Token token = original.getProperty(Util.NRTOKENPROPERTY,Token.class);
-//			if(token != null) {
-//				token.link();
-//			}
-			
 			Weaver.callOriginal();
 		}
 
