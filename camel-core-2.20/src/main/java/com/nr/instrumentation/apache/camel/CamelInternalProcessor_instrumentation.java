@@ -20,20 +20,20 @@ public abstract class CamelInternalProcessor_instrumentation {
 	@Trace(async=true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
 		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
-		if(token != null) {
+		if(token != null && token.isActive()) {
 			token.link();
+			Map<String, Object> attributes = new HashMap<String, Object>();
+			Util.recordExchange(attributes, exchange);
+			
+			TracedMethod traced = NewRelic.getAgent().getTracedMethod();
+			if(exchange != null && exchange.getFromRouteId() != null) {
+				traced.setMetricName("Custom","CamelInternalProcessor","process",exchange.getFromRouteId());
+			}
+			if(!attributes.isEmpty()) {
+				traced.addCustomAttributes(attributes);
+			}
 		}
 		
-		Map<String, Object> attributes = new HashMap<String, Object>();
-		Util.recordExchange(attributes, exchange);
-		
-		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
-		if(exchange != null && exchange.getFromRouteId() != null) {
-			traced.setMetricName("Custom","CamelInternalProcessor","process",exchange.getFromRouteId());
-		}
-		if(!attributes.isEmpty()) {
-			traced.addCustomAttributes(attributes);
-		}
 		return Weaver.callOriginal();
 	}
 }
