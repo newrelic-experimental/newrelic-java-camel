@@ -12,6 +12,7 @@ import org.apache.camel.Route;
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
+import com.newrelic.api.agent.TransactionNamePriority;
 
 public class NRAsyncProcessorWrapper extends NRProcessorWrapper implements AsyncProcessor {
 	
@@ -33,7 +34,14 @@ public class NRAsyncProcessorWrapper extends NRProcessorWrapper implements Async
 
 		String[] names;
 		if(route != null) {
-			names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process",route.getId()};
+			String routeId = route.getId();
+			if(routeId != null && !routeId.isEmpty()) {
+				names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process",routeId};
+				NewRelic.getAgent().getTracedMethod().addCustomAttribute("RouteId", routeId);
+				NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_LOW, false, "Processor", "Process",routeId);
+			} else {
+				names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process"};
+			}
 		} else {
 			names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process"};
 			
