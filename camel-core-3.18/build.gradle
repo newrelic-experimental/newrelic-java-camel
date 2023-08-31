@@ -5,7 +5,7 @@
 dependencies {
    implementation 'org.apache.camel:camel-core:3.18.0'
 
-   // New Relic Labs Java Agent dependencies
+   // New Relic Java Agent dependencies
    implementation 'com.newrelic.agent.java:newrelic-agent:6.0.0'
    implementation 'com.newrelic.agent.java:newrelic-api:6.0.0'
    implementation fileTree(include: ['*.jar'], dir: '../libs')
@@ -13,15 +13,15 @@ dependencies {
 
 jar {
   manifest {
-    attributes 'Implementation-Title': 'com.newrelic.instrumentation.labs.camel-core-3.18'
-    attributes 'Implementation-Vendor': 'New Relic Labs'
-    attributes 'Implementation-Vendor-Id': 'com.newrelic.labs'
+    attributes 'Implementation-Title': 'com.newrelic.instrumentation.camel-core-3.18'
+    attributes 'Implementation-Vendor': 'New Relic'
+    attributes 'Implementation-Vendor-Id': 'com.newrelic'
     attributes 'Implementation-Version': 1.0
   }
 }
 
 verifyInstrumentation {
-  passes 'org.apache.camel:camel-core:[3.18.0,4.0.0)'
+  passes 'org.apache.camel:camel-core:[3.18.0,)'
   excludeRegex '.*M[1-9]'
   excludeRegex '.*RC[1-9]'
 }
