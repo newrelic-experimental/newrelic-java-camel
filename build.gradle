@@ -25,7 +25,7 @@ project.ext {
   javaAgentVersion = '6.4.1'
 
   // Aligned with minimum Java major version supported by latest Java Agent
-  javaVersion = JavaVersion.VERSION_17
+  javaVersion = JavaVersion.VERSION_1_8
 
 }
 

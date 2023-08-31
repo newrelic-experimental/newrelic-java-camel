@@ -1,7 +1,6 @@
 
 // Build.gradle generated for instrumentation module camel-core-3.9
 
-apply plugin: 'java'
 
 dependencies {
    implementation 'org.apache.camel:camel-core:3.18.0'
