@@ -1,7 +1,6 @@
 rootProject.name = 'java-instrumentation-template'
 include 'camel-core-2.20'
 include 'camel-core-3.0'
-include 'camel-core-2.16'
 include 'camel-core-3.1'
 include 'camel-core-3.3'
 include 'camel-core-3.7'
