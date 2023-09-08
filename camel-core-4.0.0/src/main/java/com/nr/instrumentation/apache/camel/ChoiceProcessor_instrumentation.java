@@ -16,7 +16,7 @@ import com.newrelic.api.agent.Trace;
 import com.newrelic.api.agent.TransactionNamePriority;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
-import com.nr.instrumentation.apache.camel.wrappers.InboundMessageWrapper;
+import com.nr.instrumentation.apache.camel.wrappers.MessageHeaders;
 
 @Weave(originalName="org.apache.camel.processor.ChoiceProcessor")
 public abstract class ChoiceProcessor_instrumentation {
@@ -32,7 +32,7 @@ public abstract class ChoiceProcessor_instrumentation {
 			token.link();
 		}
 		Message inMessage = exchange.getIn();
-		InboundMessageWrapper msgWrapper = new InboundMessageWrapper(inMessage);
+		MessageHeaders msgWrapper = new MessageHeaders(inMessage);
 		Endpoint endpoint = exchange.getFromEndpoint();
 		if(endpoint != null) {
 			String endpointURI = endpoint.getEndpointUri();

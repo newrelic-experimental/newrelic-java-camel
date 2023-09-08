@@ -9,18 +9,15 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 
 import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.OutboundHeaders;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
 import com.nr.instrumentation.camel.jms.JMSHeaders;
-import com.nr.instrumentation.camel.jms.OutboundMsgWrapper;
+
 
 @Weave
 public abstract class JmsBinding {
   protected Message createJmsMessage(Exception cause, Session session) {
     Message msg = (Message)Weaver.callOriginal();
-    OutboundMsgWrapper wrapper = new OutboundMsgWrapper(msg);
-    NewRelic.getAgent().getTracedMethod().addOutboundRequestHeaders((OutboundHeaders)wrapper);
     JMSHeaders headers = new JMSHeaders(msg);
     NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
     return msg;
