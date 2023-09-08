@@ -6,13 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-
 import com.newrelic.api.agent.HeaderType;
 import com.newrelic.api.agent.Headers;
 import com.newrelic.api.agent.NewRelic;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
 
 public class JMSHeaders implements Headers {
 

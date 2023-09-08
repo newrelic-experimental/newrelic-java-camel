@@ -15,18 +15,18 @@ public abstract class JmsProducer {
   @Trace
   protected boolean processInOnly(Exchange exchange, AsyncCallback callback) {
     Message msg = exchange.getIn();
-	if (msg != null) {
-		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(new CamelHeaders(msg));
-	}
+    if(msg != null) {
+    	NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(new CamelHeaders(msg));
+    }
     return ((Boolean)Weaver.callOriginal()).booleanValue();
   }
   
   @Trace
   protected boolean processInOut(Exchange exchange, AsyncCallback callback) {
     Message msg = exchange.getIn();
-	if (msg != null) {
-		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(new CamelHeaders(msg));
-	}
+    if(msg != null) {
+    	NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(new CamelHeaders(msg));
+    }
     return ((Boolean)Weaver.callOriginal()).booleanValue();
   }
 }
