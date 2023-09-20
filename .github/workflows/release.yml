@@ -1,9 +1,7 @@
-name: Build and Release v1.3 
+name: Build and Release (Manual Run) v1.3
 
-on:
-  push:
-    branches:
-      - main
+on: 
+ workflow_dispatch: # This event allows manual triggering
 
 jobs:
   build-and-release:
@@ -55,8 +53,8 @@ jobs:
       - name: Set release version
         id: set_release_version
         run: |
-          major_version=2
-          minor_version=2
+          major_version=1
+          minor_version=0
           patch_revision=0
 
           # Retrieve the latest release tag
