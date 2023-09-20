@@ -19,13 +19,21 @@
 
 Provides instrumentation for the Apache Camel framework.
 
+
+
 ## Installation
 
 This use this instrumentation.   
 1. Download the latest release.    
 2. In the New Relic Java Agent directory (directory containing newrelic.jar), create a directory named extensions if it doe not already exist.   
 3. Copy the jars into the extensions directory.   
-4. Restart the application.   
+4. Restart the application.
+
+## Java 17 Support
+
+To ensure compatibility with Java 17, please use New Relic Java Agent version 7.4.0 or higher.
+If you're not using Java 17, you can safely remove camel-core-jms-4.0.0.jar from the extensions directory.
+Failure to follow these recommendations may lead to application crashes.
 
 ## Getting Started
 
