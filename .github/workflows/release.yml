@@ -29,10 +29,10 @@ jobs:
           mkdir /tmp/to
           echo "NEW_RELIC_EXTENSIONS_DIR=${HOME}/release" >> $GITHUB_ENV
 
-      - name: Build with Gradle and verifyInstrumentation
+      - name: Build with Gradle and No verifyInstrumentation [ Needs High Memory]
         run: |
           . ./newrelic-dependencies.sh
-          ./gradlew clean build install verifyInstrumentation
+          ./gradlew clean build install 
 
       - name: Identify Release Type
         id: define_release_type
