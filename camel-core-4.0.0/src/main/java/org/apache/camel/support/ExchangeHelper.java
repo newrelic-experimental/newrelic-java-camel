@@ -48,7 +48,7 @@ public class ExchangeHelper {
 		return result;
 	}
 	
-	public static Exchange createCorrelatedCopy(Exchange exchange, boolean handover, boolean useSameMessageId, Predicate<Synchronization> filter) {
+	public static Exchange createCorrelatedCopy(Exchange exchange, boolean handover, boolean useSameMessageId) {
 		Exchange result = Weaver.callOriginal();
 		if(result instanceof ExtendedExchangeExtension) {
 			Util.addCompletionIfNeeded((ExtendedExchangeExtension)exchange);

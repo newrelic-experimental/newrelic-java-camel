@@ -6,7 +6,7 @@ apply plugin: 'java'
 dependencies {
 	implementation 'org.apache.camel:camel-core:3.1.0'
 
-   // New Relic Java Agent dependencies
+   // New Relic Labs Java Agent dependencies
    implementation 'com.newrelic.agent.java:newrelic-agent:6.0.0'
    implementation 'com.newrelic.agent.java:newrelic-api:6.0.0'
    implementation fileTree(include: ['*.jar'], dir: '../libs')
@@ -14,9 +14,9 @@ dependencies {
 
 jar {
   manifest {
-    attributes 'Implementation-Title': 'com.newrelic.instrumentation.camel-core-3.1'
-    attributes 'Implementation-Vendor': 'New Relic'
-    attributes 'Implementation-Vendor-Id': 'com.newrelic'
+    attributes 'Implementation-Title': 'com.newrelic.instrumentation.labs.camel-core-3.1'
+    attributes 'Implementation-Vendor': 'New Relic Labs'
+    attributes 'Implementation-Vendor-Id': 'com.newrelic.labs'
     attributes 'Implementation-Version': 1.0
   }
 }

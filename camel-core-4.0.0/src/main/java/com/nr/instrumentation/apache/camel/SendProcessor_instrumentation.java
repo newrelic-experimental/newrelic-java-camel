@@ -17,7 +17,7 @@ import com.nr.instrumentation.apache.camel.wrappers.ExchangeHeaders;
 @Weave(originalName="org.apache.camel.processor.SendProcessor")
 public abstract class SendProcessor_instrumentation {
 	
-	protected Endpoint destination = Weaver.callOriginal();
+	protected final Endpoint destination = Weaver.callOriginal();
 
 	@Trace(async=true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
