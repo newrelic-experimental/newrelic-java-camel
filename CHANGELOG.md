@@ -1,7 +1,7 @@
 
 ### Enhancements
   - Added Support for Camel 4.0 Framework
-  - 
+
 ## Installation
 
 To install:
