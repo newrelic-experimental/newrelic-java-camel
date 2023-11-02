@@ -1,3 +1,7 @@
+## Version: [v2.2.1](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v2.2.1) | Created: 2023-11-02
+### Bug Fixes
+- Updated title information
+
 
 ### Enhancements
   - Added Support for Camel 4.0 Framework
