@@ -5,11 +5,12 @@ import java.util.Map;
 
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 
 import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
 import com.newrelic.api.agent.TracedMethod;
+import com.newrelic.api.agent.TransportType;
 import com.newrelic.api.agent.weaver.MatchType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
@@ -17,23 +18,21 @@ import com.newrelic.api.agent.weaver.Weaver;
 @Weave(type=MatchType.BaseClass,originalName="org.apache.camel.impl.engine.CamelInternalProcessor")
 public abstract class CamelInternalProcessor_instrumentation {
 
-	@Trace(async=true)
+	@Trace(dispatcher = true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
-		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
-		if(token != null && token.isActive()) {
-			token.link();
-			Map<String, Object> attributes = new HashMap<String, Object>();
-			Util.recordExchange(attributes, exchange);
-			
-			TracedMethod traced = NewRelic.getAgent().getTracedMethod();
-			if(exchange != null && exchange.getFromRouteId() != null) {
-				traced.setMetricName("Custom","CamelInternalProcessor","process",exchange.getFromRouteId());
-			}
-			if(!attributes.isEmpty()) {
-				traced.addCustomAttributes(attributes);
-			}
+		Map<String, Object> attributes = new HashMap<String, Object>();
+		Util.recordExchange(attributes, exchange);
+		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
+		if(exchange != null && exchange.getFromRouteId() != null) {
+			traced.setMetricName("Custom","CamelInternalProcessor","process",exchange.getFromRouteId());
 		}
+		if(!attributes.isEmpty()) {
+			traced.addCustomAttributes(attributes);
+		}
+		Message message = exchange.getMessage();
 		
+		
+		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelMessageHeaders(message));
 		return Weaver.callOriginal();
 	}
 }

@@ -10,9 +10,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ExtendedExchange;
 import org.apache.camel.spi.Synchronization;
 
-import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.Token;
-
 public class Util {
 
 	public static final String NRTOKENPROPERTY = "newrelic.asynctoken";
@@ -46,19 +43,6 @@ public class Util {
 		}
 	}
 
-	public static void addNewToken(Exchange exchange) {
-		Token token = NewRelic.getAgent().getTransaction().getToken();
-		if(token != null && token.isActive()) {
-			exchange.setProperty(NRTOKENPROPERTY, token);
-		} else {
-			if(token != null) {
-				token.expire();
-				token = null;
-			}
-			exchange.removeProperty(NRTOKENPROPERTY);
-		}
-	}
-	
 	public static void recordExchange(Map<String, Object> attributes, Exchange exchange) {
 		if(exchange != null) {
 			recordValue(attributes, "ExchangeId", exchange.getExchangeId());
