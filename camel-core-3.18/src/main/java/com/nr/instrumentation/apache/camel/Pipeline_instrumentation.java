@@ -22,8 +22,7 @@ public abstract class Pipeline_instrumentation {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, exchange);
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-		CamelHeaders headers = new CamelHeaders(exchange);
-		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, headers);
+		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		
 		if(id != null) {
 			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Pipeline","process",id);
@@ -44,8 +43,7 @@ public abstract class Pipeline_instrumentation {
 			if(exchange != null) {
 				Map<String, Object> attributes = new HashMap<String, Object>();
 				Util.recordExchange(attributes, exchange);
-				CamelHeaders headers = new CamelHeaders(exchange);
-				NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, headers);
+				NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 			
 			}
 			Weaver.callOriginal();

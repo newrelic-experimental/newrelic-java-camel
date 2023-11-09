@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 
 import com.newrelic.api.agent.HeaderType;
 import com.newrelic.api.agent.Headers;
@@ -22,6 +23,10 @@ public class CamelHeaders implements Headers {
 	@Override
 	public void addHeader(String name, String value) {
 		exchange.setProperty(name, value);
+		Message msg = exchange.getMessage();
+		if(msg != null) {
+			msg.setHeader(name, value);
+		}
 	}
 
 	@Override
@@ -31,7 +36,15 @@ public class CamelHeaders implements Headers {
 
 	@Override
 	public String getHeader(String name) {
-		return (String) exchange.getProperty(name);
+		Object value = exchange.getProperty(name);
+		
+		if (value == null) {
+			Message message = exchange.getMessage();
+			if (message != null) {
+				value = message.getHeader(name);
+			}
+		}
+		return value != null ? value.toString() : null;
 	}
 
 	@Override
@@ -59,6 +72,10 @@ public class CamelHeaders implements Headers {
 	@Override
 	public void setHeader(String name, String value) {
 		exchange.setProperty(name, value);
+		Message msg = exchange.getMessage();
+		if(msg != null) {
+			msg.setHeader(name, value);
+		}
 	}
 
 }

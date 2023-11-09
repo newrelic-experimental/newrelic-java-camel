@@ -1,6 +1,7 @@
 package com.nr.instrumentation.apache.camel;
 
 import com.newrelic.agent.bridge.AgentBridge;
+import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
 
@@ -27,6 +28,7 @@ public class NRRunnable implements Runnable {
 			token.linkAndExpire();
 			token = null;
 		}
+		NewRelic.getAgent().getTracedMethod().addCustomAttribute("Delegate", delegate.getClass().getName());
 		delegate.run();
 	}
 

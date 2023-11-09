@@ -10,26 +10,27 @@ import com.nr.instrumentation.apache.camel.Util;
 @Weave(type=MatchType.Interface)
 public abstract class Endpoint {
 
-	
+
 	public abstract String getEndpointUri();
-	
-	
+	public abstract String getEndpointBaseUri();
+
+
 	public Exchange createExchange() {
 		Exchange exchange = Weaver.callOriginal();
-		CamelHeaders headers = new CamelHeaders(exchange);
-		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
+		if(Util.isTranscationActive()) {
+			CamelHeaders headers = new CamelHeaders(exchange);
+			NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
+		}
 		return exchange;
 	}
-	
-	
+
+
 	public Exchange createExchange(ExchangePattern pattern) {
 		Exchange exchange = Weaver.callOriginal();
-		CamelHeaders headers = new CamelHeaders(exchange);
-		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
-		if(exchange instanceof ExtendedExchange) {
-			Util.addCompletionIfNeeded((ExtendedExchange)exchange);
-		}
-		
+		if(Util.isTranscationActive()) {
+			CamelHeaders headers = new CamelHeaders(exchange);
+			NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
+		}		
 		return exchange;
 	}
 

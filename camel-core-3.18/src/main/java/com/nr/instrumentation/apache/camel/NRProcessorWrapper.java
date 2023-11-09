@@ -34,8 +34,7 @@ public class NRProcessorWrapper implements Processor {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, exchange);
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-		CamelHeaders headers = new CamelHeaders(exchange);
-		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, headers);
+		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		if(route != null) {
 			String routeId = route.getId();
 			if(routeId != null && !routeId.isEmpty()) {

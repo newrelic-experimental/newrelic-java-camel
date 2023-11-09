@@ -1,7 +1,6 @@
 package org.apache.camel.support;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.ExtendedExchange;
 
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.weaver.MatchType;
@@ -15,13 +14,11 @@ public abstract class DefaultProducer {
 
 	public Exchange createExchange() {
 		Exchange exchange = Weaver.callOriginal();
-		CamelHeaders headers = new CamelHeaders(exchange);
-		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
-		if(exchange instanceof ExtendedExchange) {
-			Util.addCompletionIfNeeded((ExtendedExchange)exchange);
+		if(Util.isTranscationActive()) {
+			CamelHeaders headers = new CamelHeaders(exchange);
+			NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
 		}
-		
 		return exchange;
 	}
-	
+
 }
