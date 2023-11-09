@@ -1,12 +1,12 @@
 
-// Build.gradle generated for instrumentation module camel-core-3.7.2
+// Build.gradle generated for instrumentation module camel-kafka
 
 apply plugin: 'java'
 
-targetCompatibility = JavaVersion.VERSION_1_9
+targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
-   implementation 'org.apache.camel:camel-core:3.7.2'
+   	implementation 'org.apache.camel:camel-kafka:3.13.0'
 
    // New Relic Labs Java Agent dependencies
    implementation 'com.newrelic.agent.java:newrelic-agent:6.4.1'
@@ -16,7 +16,7 @@ dependencies {
 
 jar {
   manifest {
-    attributes 'Implementation-Title': 'com.newrelic.instrumentation.labs.camel-core-3.7.2'
+    attributes 'Implementation-Title': 'com.newrelic.instrumentation.labs.camel-kafka-3.12'
     attributes 'Implementation-Vendor': 'New Relic Labs'
     attributes 'Implementation-Vendor-Id': 'com.newrelic.labs'
     attributes 'Implementation-Version': 1.0
@@ -24,4 +24,5 @@ jar {
 }
 
 verifyInstrumentation {
-  passes 'org.apache.camel:camel-core:[3.7.2,3.9.0)'}
+    passes 'org.apache.camel:camel-kafka:[3.12.0,3.14.0)'
+ }

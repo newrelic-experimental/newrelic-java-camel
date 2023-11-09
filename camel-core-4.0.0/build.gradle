@@ -1,6 +1,7 @@
 
 // Build.gradle generated for instrumentation module camel-core-3.9
 
+targetCompatibility = JavaVersion.VERSION_17
 
 dependencies {
    implementation 'org.apache.camel:camel-core:4.0.0'
