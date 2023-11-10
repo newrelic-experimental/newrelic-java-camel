@@ -10,11 +10,12 @@ import org.apache.camel.ExchangePattern;
 import org.apache.camel.Processor;
 
 import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
 import com.newrelic.api.agent.TransactionNamePriority;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
+import com.nr.instrumentation.apache.camel.CamelHeaders;
+import com.nr.instrumentation.apache.camel.CamelMapHeaders;
 import com.nr.instrumentation.apache.camel.NRProcessorWrapper;
 import com.nr.instrumentation.apache.camel.Util;
 
@@ -26,16 +27,8 @@ public abstract class DefaultProducerTemplate {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, inExchange);
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-		Token token = (Token) inExchange.getProperty(Util.NRTOKENPROPERTY);
-		if(token == null) {
-			token = NewRelic.getAgent().getTransaction().getToken();
-			if(token != null && token.isActive()) {
-				inExchange.setProperty(Util.NRTOKENPROPERTY, token);
-			} else if(token != null) {
-				token.expire();
-				token = null;
-			}
-		}
+		CamelHeaders headers = new CamelHeaders(inExchange);
+		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
 		if(endpoint != null) {
 			String uri = endpoint.getEndpointUri();
 			if(uri != null && !uri.isEmpty()) {
@@ -54,16 +47,8 @@ public abstract class DefaultProducerTemplate {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, exchange);
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-		Token token = (Token) exchange.getProperty(Util.NRTOKENPROPERTY);
-		if(token == null) {
-			token = NewRelic.getAgent().getTransaction().getToken();
-			if(token != null && token.isActive()) {
-				exchange.setProperty(Util.NRTOKENPROPERTY, token);
-			} else if(token != null) {
-				token.expire();
-				token = null;
-			}
-		}
+		CamelHeaders headers = new CamelHeaders(exchange);
+		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
 		if(endpoint != null) {
 			String uri = endpoint.getEndpointUri();
 			if(uri != null && !uri.isEmpty()) {
@@ -78,4 +63,9 @@ public abstract class DefaultProducerTemplate {
 	}
 
 
+	protected Processor createBodyAndHeaders(Object body, Map<String, Object> headers) {
+		CamelMapHeaders nrHeaders = new CamelMapHeaders(headers);
+		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(nrHeaders);
+		return Weaver.callOriginal();
+	}
 }
