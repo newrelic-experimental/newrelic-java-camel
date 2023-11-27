@@ -9,8 +9,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
 import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
+import com.newrelic.api.agent.TransportType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
 
@@ -22,11 +22,7 @@ public class SharedInternalProcessor_instrumentation {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, exchange);
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
-
-		if(token != null) {
-			token.link();
-		}
+		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 
 		return Weaver.callOriginal();
 	}
