@@ -38,6 +38,10 @@ public class NRAsyncProcessorWrapper extends NRProcessorWrapper implements Async
 				names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process"};
 			}
 		} else {
+			Object timerTaskValue = exchange.getProperty(Exchange.TIMER_NAME);
+			if(timerTaskValue != null) {
+				names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process","TimerTask",timerTaskValue.toString()};
+			}
 			names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process"};
 			
 		}

@@ -28,6 +28,7 @@ public abstract class DefaultAsyncProducer {
 		Weaver.callOriginal();
 	}
 	
+	@Trace(dispatcher = true)
 	public CompletableFuture<Exchange> processAsync(Exchange exchange) {
 		HashMap<String, Object> attributes = new HashMap<>();
 		Util.recordExchange(attributes, exchange);

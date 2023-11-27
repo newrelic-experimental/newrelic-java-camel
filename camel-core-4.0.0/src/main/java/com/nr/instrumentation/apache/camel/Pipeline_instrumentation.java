@@ -8,6 +8,10 @@ import org.apache.camel.Exchange;
 
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Trace;
+<<<<<<< HEAD
+import com.newrelic.api.agent.TransactionNamePriority;
+=======
+>>>>>>> d0220d8a6cec0f241b014d5fb09bdcb07f834f63
 import com.newrelic.api.agent.TransportType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
@@ -17,12 +21,19 @@ public abstract class Pipeline_instrumentation {
 	
 	private String id = Weaver.callOriginal();
 	
+<<<<<<< HEAD
+	@Trace
+=======
 	@Trace(dispatcher = true)
+>>>>>>> d0220d8a6cec0f241b014d5fb09bdcb07f834f63
 	public boolean process(Exchange exchange, AsyncCallback callback) {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, exchange);
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
+<<<<<<< HEAD
+=======
 		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
+>>>>>>> d0220d8a6cec0f241b014d5fb09bdcb07f834f63
 		
 		if(id != null) {
 			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Pipeline","process",id);
@@ -43,8 +54,17 @@ public abstract class Pipeline_instrumentation {
 			if(exchange != null) {
 				Map<String, Object> attributes = new HashMap<String, Object>();
 				Util.recordExchange(attributes, exchange);
+<<<<<<< HEAD
+				NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
+				NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
+				String fromRoute = exchange.getFromRouteId();
+				if(fromRoute == null) fromRoute = "UnknownFromRoute";
+				NewRelic.getAgent().getTracedMethod().setMetricName("Custom","PipelineTask","run",fromRoute);
+				NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_HIGH, false, "Pipeline", "Custom","PipelineTask","run",fromRoute);
+=======
 				NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 			
+>>>>>>> d0220d8a6cec0f241b014d5fb09bdcb07f834f63
 			}
 			Weaver.callOriginal();
 		}
