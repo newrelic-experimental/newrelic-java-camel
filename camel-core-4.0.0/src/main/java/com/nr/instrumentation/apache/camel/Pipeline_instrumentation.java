@@ -7,8 +7,9 @@ import org.apache.camel.AsyncCallback;
 import org.apache.camel.Exchange;
 
 import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
+import com.newrelic.api.agent.TransactionNamePriority;
+import com.newrelic.api.agent.TransportType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
 
@@ -17,24 +18,12 @@ public abstract class Pipeline_instrumentation {
 	
 	private String id = Weaver.callOriginal();
 	
-	@Trace(async=true)
+	@Trace
 	public boolean process(Exchange exchange, AsyncCallback callback) {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, exchange);
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
-
-		if(token != null) {
-			token.link();
-		} else {
-			Token t = NewRelic.getAgent().getTransaction().getToken();
-			if(t != null && t.isActive()) {
-				exchange.setProperty(Util.NRTOKENPROPERTY, t);
-			} else if(t != null) {
-				t.expire();
-				t = null;
-			}
-		}
+		
 		if(id != null) {
 			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Pipeline","process",id);
 			NewRelic.getAgent().getTracedMethod().addCustomAttribute("PipelineID", id);
@@ -49,18 +38,17 @@ public abstract class Pipeline_instrumentation {
 		
 		private Exchange exchange = Weaver.callOriginal();
 		
-		@Trace(async=true)
+		@Trace(dispatcher=true)
 		public void run() {
 			if(exchange != null) {
 				Map<String, Object> attributes = new HashMap<String, Object>();
 				Util.recordExchange(attributes, exchange);
 				NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-				Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
-
-				if(token != null) {
-					token.link();
-				}
-			
+				NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
+				String fromRoute = exchange.getFromRouteId();
+				if(fromRoute == null) fromRoute = "UnknownFromRoute";
+				NewRelic.getAgent().getTracedMethod().setMetricName("Custom","PipelineTask","run",fromRoute);
+				NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_HIGH, false, "Pipeline", "Custom","PipelineTask","run",fromRoute);
 			}
 			Weaver.callOriginal();
 		}

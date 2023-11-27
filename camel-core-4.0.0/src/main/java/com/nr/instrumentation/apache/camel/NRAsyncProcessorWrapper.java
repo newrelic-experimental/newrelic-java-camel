@@ -10,9 +10,9 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Route;
 
 import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
 import com.newrelic.api.agent.TransactionNamePriority;
+import com.newrelic.api.agent.TransportType;
 
 public class NRAsyncProcessorWrapper extends NRProcessorWrapper implements AsyncProcessor {
 	
@@ -26,12 +26,7 @@ public class NRAsyncProcessorWrapper extends NRProcessorWrapper implements Async
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, exchange);
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
-
-		if(token != null) {
-			token.link();
-		}
-
+		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		String[] names;
 		if(route != null) {
 			String routeId = route.getId();
@@ -43,6 +38,10 @@ public class NRAsyncProcessorWrapper extends NRProcessorWrapper implements Async
 				names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process"};
 			}
 		} else {
+			Object timerTaskValue = exchange.getProperty(Exchange.TIMER_NAME);
+			if(timerTaskValue != null) {
+				names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process","TimerTask",timerTaskValue.toString()};
+			}
 			names = new String[] {"Custom","AsyncProcessor",delegate.getClass().getSimpleName(),"process"};
 			
 		}
@@ -51,17 +50,12 @@ public class NRAsyncProcessorWrapper extends NRProcessorWrapper implements Async
 	}
 
 	@Override
-	@Trace(async=true)
+	@Trace(dispatcher = true)
 	public CompletableFuture<Exchange> processAsync(Exchange exchange) {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, exchange);
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
-
-		if(token != null) {
-			token.link();
-		}
-
+		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		String[] names;
 		if(route != null) {
 			String routeId = route.getId();

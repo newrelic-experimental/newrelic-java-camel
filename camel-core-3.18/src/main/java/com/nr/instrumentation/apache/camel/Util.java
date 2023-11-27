@@ -2,8 +2,10 @@ package com.nr.instrumentation.apache.camel;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
@@ -22,6 +24,7 @@ public class Util {
 	
 	static {
 		ignores = new ArrayList<>();
+		ignores.add("org.apache.camel.impl.engine.CamelInternalProcessor$AsyncAfterTask");
 	}
 
 	@SuppressWarnings("deprecation")
@@ -84,7 +87,7 @@ public class Util {
 			recordValue(attributes, "CamelContextManagementName", context.getManagementName());
 			Endpoint endpoint = exchange.getFromEndpoint();
 			if(endpoint != null) {
-				recordValue(attributes, "From_EndPointURI", endpoint.getEndpointUri());
+				recordValue(attributes, "From_EndPointURI", endpoint.getEndpointBaseUri());
 			}
 			recordValue(attributes, "FromRouteId", exchange.getFromRouteId());
 			if(exchange instanceof ExtendedExchange) {
@@ -117,4 +120,14 @@ public class Util {
 		}
 	}
 
+	public static void reportExchange(Exchange exchange) {
+		HashMap<String, Object> attributes = new HashMap<>();
+		recordValue(attributes, "ExchangeId", exchange.getExchangeId());
+		Map<String, Object> properties = exchange.getAllProperties();
+		Set<String> keys = properties.keySet();
+		for(String key : keys) {
+			recordValue(attributes, key, properties.get(key));
+		}
+		NewRelic.getAgent().getInsights().recordCustomEvent("Pipeline_Exchange", attributes);
+	}
 }
