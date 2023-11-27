@@ -2,10 +2,7 @@ package com.nr.instrumentation.apache.camel;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-<<<<<<< HEAD
 import java.util.HashMap;
-=======
->>>>>>> d0220d8a6cec0f241b014d5fb09bdcb07f834f63
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,12 +10,8 @@ import java.util.Set;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
-<<<<<<< HEAD
 import org.apache.camel.ExchangeExtension;
-=======
->>>>>>> d0220d8a6cec0f241b014d5fb09bdcb07f834f63
 import org.apache.camel.spi.Synchronization;
-import org.apache.camel.support.ExtendedExchangeExtension;
 
 import com.newrelic.agent.bridge.AgentBridge;
 import com.newrelic.api.agent.NewRelic;
@@ -31,10 +24,7 @@ public class Util {
 	
 	static {
 		ignores = new ArrayList<>();
-<<<<<<< HEAD
 		ignores.add("org.apache.camel.impl.engine.CamelInternalProcessor$AsyncAfterTask");
-=======
->>>>>>> d0220d8a6cec0f241b014d5fb09bdcb07f834f63
 	}
 
 	@SuppressWarnings("deprecation")
@@ -68,7 +58,7 @@ public class Util {
 		return classname + "." + methodName;
 	}
 
-	public static void addCompletionIfNeeded(ExtendedExchangeExtension exchange) {
+	public static void addCompletionIfNeeded(ExchangeExtension exchange) {
 		if(exchange == null) return;
 
 		List<Synchronization> completions = exchange.handoverCompletions();
@@ -100,24 +90,14 @@ public class Util {
 				recordValue(attributes, "From_EndPointURI", endpoint.getEndpointBaseUri());
 			}
 			recordValue(attributes, "FromRouteId", exchange.getFromRouteId());
-<<<<<<< HEAD
-			ExchangeExtension extension = exchange.getExchangeExtension();
-			if(extension != null) {
-				recordExtendedExchange(attributes, extension);
-=======
-			if(exchange instanceof ExtendedExchangeExtension) {
-				ExtendedExchangeExtension extended = (ExtendedExchangeExtension)exchange;
+			ExchangeExtension extended = exchange.getExchangeExtension();
+			if(extended != null) {
 				recordExtendedExchange(attributes, extended);
->>>>>>> d0220d8a6cec0f241b014d5fb09bdcb07f834f63
 			}
 		}
 	}
 	
-<<<<<<< HEAD
 	private static void recordExtendedExchange(Map<String, Object> attributes, ExchangeExtension exchange) {
-=======
-	private static void recordExtendedExchange(Map<String, Object> attributes, ExtendedExchangeExtension exchange) {
->>>>>>> d0220d8a6cec0f241b014d5fb09bdcb07f834f63
 		if(exchange != null) {
 			recordValue(attributes, "HistoryNodeId", exchange.getHistoryNodeId());
 			recordValue(attributes, "HistoryNodeLabel", exchange.getHistoryNodeLabel());
