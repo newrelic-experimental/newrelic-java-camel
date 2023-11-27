@@ -4,39 +4,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.camel.AsyncCallback;
+import org.apache.camel.AsyncProducer;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 
 import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
+import com.newrelic.api.agent.TransportType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
-import com.nr.instrumentation.apache.camel.wrappers.OutboundExchangeWrapper;
 
 @Weave(originalName="org.apache.camel.processor.SendProcessor")
 public abstract class SendProcessor_instrumentation {
 	
 	protected Endpoint destination = Weaver.callOriginal();
+	protected String routeId = Weaver.callOriginal();
+	protected AsyncProducer producer = Weaver.callOriginal();
+	
 
-	@Trace(async=true)
+	@Trace(dispatcher=true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
+		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, exchange);
+		Util.recordValue(attributes, "RouteID", routeId);
+
+		String dest = destination != null ? destination.getEndpointBaseUri() : null;
+		Util.recordValue(attributes, "Destination", dest);
+		Util.recordValue(attributes, "SendProcessor-Processor", producer != null ? producer.getClass().getName() : null);
+
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
-
-		if(token != null) {
-			token.link();
-		}
-
-		String dest = destination != null ? destination.getEndpointUri() : null;
 		if(dest != null && !dest.isEmpty()) {
 			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","SendProcessor","process",dest);
 			NewRelic.getAgent().getTracedMethod().addCustomAttribute("DestinationURI", dest);
 		}
-		OutboundExchangeWrapper wrapper = new OutboundExchangeWrapper(exchange);
-		NewRelic.getAgent().getTracedMethod().addOutboundRequestHeaders(wrapper);
 		return Weaver.callOriginal();
 	}
 	

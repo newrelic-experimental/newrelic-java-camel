@@ -1,6 +1,7 @@
 package com.nr.instrumentation.apache.camel;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,13 +11,41 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ExtendedExchange;
 import org.apache.camel.spi.Synchronization;
 
+import com.newrelic.agent.bridge.AgentBridge;
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Token;
 
 public class Util {
 
 	public static final String NRTOKENPROPERTY = "newrelic.asynctoken";
+	private static final List<String> ignores;
+	
+	static {
+		ignores = new ArrayList<>();
+	}
 
+	@SuppressWarnings("deprecation")
+	public static boolean isTranscationActive() {
+		return AgentBridge.getAgent().getTransaction().isStarted();
+	}
+	
+	public static NRRunnable getRunnable(Runnable runnable) {
+		String classname = runnable.getClass().getName();
+		if(ignores.contains(classname)) return null;
+		
+		if(runnable instanceof NRRunnable) return (NRRunnable)runnable;
+		
+		Token token = NewRelic.getAgent().getTransaction().getToken();
+		if(token != null && token.isActive()) {
+			return new NRRunnable(runnable, token);
+		} else if(token != null) {
+			token.expire();
+			token = null;
+		}
+		
+		return null;
+	}
+	
 	public static String getMethodName(Method m) {
 		if(m == null) return "UnknownClass.UnknownMethod";
 
@@ -46,19 +75,6 @@ public class Util {
 		}
 	}
 
-	public static void addNewToken(Exchange exchange) {
-		Token token = NewRelic.getAgent().getTransaction().getToken();
-		if(token != null && token.isActive()) {
-			exchange.setProperty(NRTOKENPROPERTY, token);
-		} else {
-			if(token != null) {
-				token.expire();
-				token = null;
-			}
-			exchange.removeProperty(NRTOKENPROPERTY);
-		}
-	}
-	
 	public static void recordExchange(Map<String, Object> attributes, Exchange exchange) {
 		if(exchange != null) {
 			recordValue(attributes, "ExchangeId", exchange.getExchangeId());
@@ -71,10 +87,30 @@ public class Util {
 				recordValue(attributes, "From_EndPointURI", endpoint.getEndpointUri());
 			}
 			recordValue(attributes, "FromRouteId", exchange.getFromRouteId());
+			if(exchange instanceof ExtendedExchange) {
+				ExtendedExchange extended = (ExtendedExchange)exchange;
+				recordExtendedExchange(attributes, extended);
+			}
 		}
 	}
 	
-	private static void recordValue(Map<String,Object> attributes, String key, Object value) {
+	private static void recordExtendedExchange(Map<String, Object> attributes, ExtendedExchange exchange) {
+		if(exchange != null) {
+			recordValue(attributes, "HistoryNodeId", exchange.getHistoryNodeId());
+			recordValue(attributes, "HistoryNodeLabel", exchange.getHistoryNodeLabel());
+			Map<String, Object> internalProps = exchange.getInternalProperties();
+			if (internalProps != null) {
+				for (String key : internalProps.keySet()) {
+					Object value = internalProps.get(key);
+					recordValue(attributes, "InternalProperty-"+key, value);
+				} 
+			}
+			recordValue(attributes, "HistoryNodeId", exchange.getInternalProperties());
+
+		}
+	}
+	
+	public static void recordValue(Map<String,Object> attributes, String key, Object value) {
 		if(key != null && !key.isEmpty() && value != null) {
 			attributes.put(key, value);
 		}

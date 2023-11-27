@@ -3,6 +3,8 @@
 
 apply plugin: 'java'
 
+targetCompatibility = JavaVersion.VERSION_11
+
 dependencies {
 	implementation 'org.apache.camel:camel-jms:3.18.0'
 	implementation 'javax.jms:javax.jms-api:2.0'

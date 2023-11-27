@@ -7,10 +7,11 @@ import org.apache.camel.AsyncCallback;
 import org.apache.camel.Exchange;
 
 import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
+import com.newrelic.api.agent.TransportType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
+import com.nr.instrumentation.apache.camel.CamelHeaders;
 import com.nr.instrumentation.apache.camel.Util;
 
 @Weave
@@ -18,7 +19,7 @@ public abstract class BeanProcessor {
 	
 	public abstract String getMethod();
 
-	@Trace(async=true)
+	@Trace(dispatcher=true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, exchange);
@@ -30,11 +31,7 @@ public abstract class BeanProcessor {
 		} else {
 			NewRelic.getAgent().getTracedMethod().setMetricName(new String[] {"Custom","BeanProcessor","process"});
 		}
-		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
-		
-		if(token != null) {
-			token.link();
-		}
+		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		return Weaver.callOriginal();
 	}
 }
