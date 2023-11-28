@@ -1,14 +1,12 @@
 ## Version: [v3.2.0](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v3.2.0) | Created: 2023-11-28
 ### Features
-- Eat:added enhancement for Camel core for the version 3.9 and above
+- Added enhancement for Camel core for the version 3.9 and above
 
 ### Enhancements
 - Added support for Camel Netty and Camel Kafka
-- Added support for Camel Netty and Camel Kafka
 
 ### Bug Fixes
-- Ixes merged problems
-- Erge pull request #18 from newrelic-experimental/merge-fixes
+- Merge pull request [#18](https://github.com/newrelic-experimental/newrelic-java-camel/pull/18) from newrelic-experimental/merge-fixes
 
 ## Version: [v2.2.1](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v2.2.1) | Created: 2023-11-02
 ### Bug Fixes
