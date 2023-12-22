@@ -1,8 +1,5 @@
 package com.nr.instrumentation.apache.camel;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.Exchange;
 
@@ -19,51 +16,31 @@ public abstract class Pipeline_instrumentation {
 	
 	@Trace(async=true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
-		Map<String, Object> attributes = new HashMap<String, Object>();
-		Util.recordExchange(attributes, exchange);
-		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
 		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
 
 		if(token != null) {
 			token.link();
-		} else {
-			Token t = NewRelic.getAgent().getTransaction().getToken();
-			if(t != null && t.isActive()) {
-				exchange.setProperty(Util.NRTOKENPROPERTY, t);
-			} else if(t != null) {
-				t.expire();
-				t = null;
-			}
 		}
 		if(id != null) {
 			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Pipeline","process",id);
-			NewRelic.getAgent().getTracedMethod().addCustomAttribute("PipelineID", id);
 		} else {
 			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Pipeline","process");
 		}
 		return Weaver.callOriginal();
 	}
 	
-	@Weave(originalName="org.apache.camel.processor.Pipeline$PipelineTask")
-	private static class PipelineTask {
-		
-		private Exchange exchange = Weaver.callOriginal();
-		
-		@Trace(async=true)
-		public void run() {
-			if(exchange != null) {
-				Map<String, Object> attributes = new HashMap<String, Object>();
-				Util.recordExchange(attributes, exchange);
-				NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-				Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
+	@Trace(async=true)
+	public void process(Exchange exchange) {
+		Token token = exchange.getProperty(Util.NRTOKENPROPERTY,Token.class);
 
-				if(token != null) {
-					token.link();
-				}
-			
-			}
-			Weaver.callOriginal();
+		if(token != null) {
+			token.link();
 		}
+		if(id != null) {
+			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Pipeline","process",id);
+		} else {
+			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Pipeline","process");
+		}
+		Weaver.callOriginal();
 	}
-	
 }

@@ -1,4 +1,4 @@
-package org.apache.camel.support;
+package org.apache.camel.impl;
 
 import org.apache.camel.AsyncProcessor;
 import org.apache.camel.Endpoint;

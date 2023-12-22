@@ -1,10 +1,9 @@
-package org.apache.camel.support;
+package org.apache.camel.util;
 
 import java.util.function.Predicate;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
-import org.apache.camel.ExtendedExchange;
 import org.apache.camel.spi.Synchronization;
 
 import com.newrelic.api.agent.NewRelic;
@@ -18,9 +17,7 @@ public class ExchangeHelper {
 
 	public static Exchange copyExchangeAndSetCamelContext(Exchange exchange, CamelContext context, boolean handover) {
 		Exchange result = Weaver.callOriginal();
-		if(result instanceof ExtendedExchange) {
-			Util.addCompletionIfNeeded((ExtendedExchange)exchange);
-		}
+		Util.addCompletionIfNeeded(result);
 		
 		if(handover) {
 			Token token = (Token) exchange.getProperty(Util.NRTOKENPROPERTY);
@@ -43,17 +40,13 @@ public class ExchangeHelper {
 	
 	public static Exchange createCopy(Exchange exchange, boolean preserveExchangeId) {
 		Exchange result = Weaver.callOriginal();
-		if(result instanceof ExtendedExchange) {
-			Util.addCompletionIfNeeded((ExtendedExchange)exchange);
-		}
+		Util.addCompletionIfNeeded(result);
 		return result;
 	}
 	
 	public static Exchange createCorrelatedCopy(Exchange exchange, boolean handover, boolean useSameMessageId, Predicate<Synchronization> filter) {
 		Exchange result = Weaver.callOriginal();
-		if(result instanceof ExtendedExchange) {
-			Util.addCompletionIfNeeded((ExtendedExchange)exchange);
-		}
+		Util.addCompletionIfNeeded(result);
 		
 		if (handover) {
 			Token token = (Token) exchange.getProperty(Util.NRTOKENPROPERTY);

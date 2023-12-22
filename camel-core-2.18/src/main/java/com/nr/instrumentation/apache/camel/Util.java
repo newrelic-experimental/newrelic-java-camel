@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
-import org.apache.camel.ExtendedExchange;
 import org.apache.camel.spi.Synchronization;
 
 import com.newrelic.api.agent.NewRelic;
@@ -26,7 +25,7 @@ public class Util {
 		return classname + "." + methodName;
 	}
 
-	public static void addCompletionIfNeeded(ExtendedExchange exchange) {
+	public static void addCompletionIfNeeded(Exchange exchange) {
 		if(exchange == null) return;
 
 		List<Synchronization> completions = exchange.handoverCompletions();
