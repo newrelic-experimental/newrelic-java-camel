@@ -8,8 +8,7 @@ import com.newrelic.api.agent.Token;
 
 public class NRSynchronization implements Synchronization {
 	
-	public NRSynchronization() {
-	}
+	
 
 	@Override
 	public void onComplete(Exchange exchange) {
@@ -23,7 +22,6 @@ public class NRSynchronization implements Synchronization {
 
 	@Override
 	public void onFailure(Exchange exchange) {
-		NewRelic.incrementCounter("/Custom/NRSynchronization/Failed");
 		if(exchange.hasProperties()) {
 			Token token = (Token) exchange.removeProperty(Util.NRTOKENPROPERTY);
 			if(token != null) {

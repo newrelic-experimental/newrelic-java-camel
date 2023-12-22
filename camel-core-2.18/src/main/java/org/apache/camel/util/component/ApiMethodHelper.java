@@ -1,4 +1,4 @@
-package org.apache.camel.support.component;
+package org.apache.camel.util.component;
 
 import java.util.Map;
 

@@ -9,12 +9,8 @@ import com.nr.instrumentation.apache.camel.NRSynchronization;
 import com.nr.instrumentation.apache.camel.Util;
 
 @Weave(type=MatchType.Interface)
-public abstract class Endpoint {
+public abstract class Producer {
 
-	
-	public abstract String getEndpointUri();
-	
-	
 	public Exchange createExchange() {
 		Exchange exchange = Weaver.callOriginal();
 		Token token = (Token) exchange.getProperty(Util.NRTOKENPROPERTY);

@@ -25,4 +25,6 @@ jar {
 
 verifyInstrumentation {
   passes 'org.apache.camel:camel-core:[3.9.0,3.18.0)'
+  excludeRegex '.*M[1-9]'
+  excludeRegex '.*RC[1-9]'
 }
