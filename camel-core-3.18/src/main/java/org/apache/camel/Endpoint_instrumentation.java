@@ -7,8 +7,8 @@ import com.newrelic.api.agent.weaver.Weaver;
 import com.nr.instrumentation.apache.camel.CamelHeaders;
 import com.nr.instrumentation.apache.camel.Util;
 
-@Weave(type=MatchType.Interface)
-public abstract class Endpoint {
+@Weave(type=MatchType.Interface, originalName = "org.apache.camel.Endpoint")
+public abstract class Endpoint_instrumentation {
 
 
 	public abstract String getEndpointUri();
