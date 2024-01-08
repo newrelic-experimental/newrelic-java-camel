@@ -1,3 +1,12 @@
+## Version: [v3.0.1](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v3.0.1) | Created: 2024-01-08
+### Bug Fixes
+- Ixes
+- Ixes
+- Erge pull request #19 from newrelic-experimental/merge-fixes
+- Ixes
+- Ixes
+- Erge pull request #20 from newrelic-experimental/merge-fixes
+
 ## Version: [v3.0.0](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v3.0.0) | Created: 2023-11-28
 ### Features
 - Added enhancement for Camel core for the version 3.9 and above
