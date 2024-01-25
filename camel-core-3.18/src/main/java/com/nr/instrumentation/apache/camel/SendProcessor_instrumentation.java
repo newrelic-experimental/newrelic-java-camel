@@ -9,8 +9,6 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 
 import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.Trace;
-import com.newrelic.api.agent.TransportType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
 
@@ -22,9 +20,7 @@ public abstract class SendProcessor_instrumentation {
 	protected AsyncProducer producer = Weaver.callOriginal();
 	
 
-	@Trace(dispatcher=true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
-		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, exchange);
 		Util.recordValue(attributes, "RouteID", routeId);
