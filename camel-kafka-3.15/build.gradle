@@ -6,7 +6,7 @@ apply plugin: 'java'
 targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
-   	implementation 'org.apache.camel:camel-kafka:3.18.0'
+   	implementation 'org.apache.camel:camel-kafka:3.15.0'
 
    // New Relic Labs Java Agent dependencies
    implementation 'com.newrelic.agent.java:newrelic-agent:6.4.1'
