@@ -18,17 +18,12 @@ import com.newrelic.instrumentation.camel.kafka.ConsumerRecordHeaders;
 public abstract class KafkaRecordProcessor {
 
 	@Trace(dispatcher = true)
-	public ProcessResult processExchange(Exchange exchange, TopicPartition partition, boolean partitionHasNext, boolean recordHasNext, ConsumerRecord<Object, Object> record, ProcessResult lastResult,
-            ExceptionHandler exceptionHandler) {
+	public ProcessingResult processExchange(Exchange exchange, TopicPartition partition, boolean partitionHasNext, 
+            boolean recordHasNext, ConsumerRecord<Object, Object> record, ProcessingResult lastResult, ExceptionHandler exceptionHandler) {
 		ConsumerRecordHeaders headers = new ConsumerRecordHeaders(record);
 		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Kafka, headers);
 		MessageConsumeParameters params = MessageConsumeParameters.library("Kafka").destinationType(DestinationType.NAMED_TOPIC).destinationName(partition.topic()).inboundHeaders(headers).build();
 		NewRelic.getAgent().getTracedMethod().reportAsExternal(params);
 		return Weaver.callOriginal();
-	}
-	
-	@Weave
-	public static final class ProcessResult {
-		
 	}
 }

@@ -9,8 +9,9 @@ import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.weaver.MatchType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
-import com.nr.instrumentation.apache.camel.NRAsyncProcessorWrapper;
-import com.nr.instrumentation.apache.camel.NRProcessorWrapper;
+import com.nr.instrumentation.apache.camel.NRAsyncProcessorStart;
+import com.nr.instrumentation.apache.camel.NRProcessorStart;
+import com.nr.instrumentation.apache.camel.Util;
 
 @Weave(type=MatchType.BaseClass)
 public abstract class DefaultConsumer {
@@ -23,16 +24,20 @@ public abstract class DefaultConsumer {
 	
 	public synchronized AsyncProcessor getAsyncProcessor() {
 		AsyncProcessor asyncProcessor = Weaver.callOriginal();
-		if(asyncProcessor != null && !(asyncProcessor instanceof NRAsyncProcessorWrapper)) {
-			return new NRAsyncProcessorWrapper(asyncProcessor,getRoute());
+		NRAsyncProcessorStart wrapper = Util.getStartingWrapper(asyncProcessor);
+		if(wrapper != null) {
+			wrapper.setConsumer(getClass().getSimpleName());
+			asyncProcessor = wrapper;
 		}
 		return asyncProcessor;
 	}
 	
 	public Processor getProcessor() {
 		Processor processor = Weaver.callOriginal();
-		if(!(processor instanceof NRProcessorWrapper)) {
-			return new NRProcessorWrapper(processor,getRoute());
+		NRProcessorStart wrapper = Util.getStartingWrapper(processor);
+		if(wrapper != null) {
+			wrapper.setConsumer(getClass().getSimpleName());
+			processor = wrapper;
 		}
 		return processor;
 	}

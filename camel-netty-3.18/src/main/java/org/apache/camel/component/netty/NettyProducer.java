@@ -10,10 +10,10 @@ import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Segment;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
+import com.newrelic.api.agent.TransportType;
 import com.newrelic.api.agent.weaver.NewField;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
-import com.newrelic.instrumentation.labs.camel.netty.AsyncCallbackWrapper;
 import com.newrelic.instrumentation.labs.camel.netty.ExchangeHeaders;
 
 import io.netty.channel.ChannelFuture;
@@ -25,17 +25,15 @@ public abstract class NettyProducer {
 
 	@Trace(dispatcher = true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
-		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(new ExchangeHeaders(exchange));
+//		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new ExchangeHeaders(exchange));
 		if(configuration != null) {
-			AsyncCallbackWrapper wrapper = new AsyncCallbackWrapper(callback);
 			String host = configuration.getHost();
 			int port = configuration.getPort();
 			URI uri = URI.create("tcp://"+host+":"+port);
 			GenericParameters params = GenericParameters.library("Camel-Netty").uri(uri).procedure("process").build();
 			Segment segment = NewRelic.getAgent().getTransaction().startSegment("Camel/Netty/Send");
 			segment.reportAsExternal(params);
-			wrapper.setSegment(segment);
-			callback = wrapper;
+			exchange.setProperty("NRSEGMENT", segment);
 		}
 
 		return Weaver.callOriginal();
@@ -43,15 +41,18 @@ public abstract class NettyProducer {
 
 	@Trace(dispatcher = true)
 	public void processWithConnectedChannel(Exchange exchange, BodyReleaseCallback callback, ChannelFuture channelFuture, Object body) {
-		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(new ExchangeHeaders(exchange));
+		Object obj = exchange.getProperty("NRSEGMENT");
+		if(obj != null && obj instanceof Segment) {
+			((Segment)obj).end();
+		}
 		Weaver.callOriginal();
 	}
 
 
 	@SuppressWarnings("unused")
 	private boolean processWithBody(final Exchange exchange, Object body, BodyReleaseCallback callback) {
-		ExchangeHeaders headers = new ExchangeHeaders(exchange);
-		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
+//		ExchangeHeaders headers = new ExchangeHeaders(exchange);
+//		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
 		return Weaver.callOriginal();
 	}
 

@@ -1,8 +1,7 @@
-package org.apache.camel.support;
+package org.apache.camel.component.seda;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Trace;
@@ -13,12 +12,10 @@ import com.newrelic.api.agent.weaver.Weaver;
 import com.nr.instrumentation.apache.camel.CamelHeaders;
 
 @Weave
-public abstract class ProcessorPollingConsumer extends PollingConsumerSupport {
-	
-	 public ProcessorPollingConsumer(Endpoint endpoint, Processor processor) {
-	        super(endpoint);
-	 }
+public abstract class SedaPollingConsumer {
 
+	public abstract SedaEndpoint getEndpoint();
+	
 	@Trace(dispatcher = true)
 	public Exchange receive() {
 		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Camel","PollingConsumer",getClass().getSimpleName(),"receive");
@@ -29,7 +26,7 @@ public abstract class ProcessorPollingConsumer extends PollingConsumerSupport {
 			if(endPt != null) {
 				String uri = endPt.getEndpointUri();
 				if(uri != null && !uri.isEmpty()) {
-					NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_HIGH, false, "PollingConsumer", "Camel","ProcessorPollingConsumer",uri);
+					NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_HIGH, false, "PollingConsumer", "Camel","SedaPollingConsumer",uri);
 				}
 			}
 		} else {
@@ -47,7 +44,7 @@ public abstract class ProcessorPollingConsumer extends PollingConsumerSupport {
 			if(endPt != null) {
 				String uri = endPt.getEndpointUri();
 				if(uri != null && !uri.isEmpty()) {
-					NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_HIGH, false, "PollingConsumer", "Camel","ProcessorPollingConsumer",uri);
+					NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_HIGH, false, "PollingConsumer", "Camel","SedaPollingConsumer",uri);
 				}
 			}
 			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other,  new CamelHeaders(exchange));
@@ -66,7 +63,7 @@ public abstract class ProcessorPollingConsumer extends PollingConsumerSupport {
 			if(endPt != null) {
 				String uri = endPt.getEndpointUri();
 				if(uri != null && !uri.isEmpty()) {
-					NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_HIGH, false, "PollingConsumer", "Camel","ProcessorPollingConsumer",uri);
+					NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_HIGH, false, "PollingConsumer", "Camel","SedaPollingConsumer",uri);
 				}
 			}
 			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other,  new CamelHeaders(exchange));
@@ -75,5 +72,4 @@ public abstract class ProcessorPollingConsumer extends PollingConsumerSupport {
 		}
 		return exchange;
 	}
-
 }

@@ -20,6 +20,7 @@ public abstract class NettyProducer {
 	@Trace(dispatcher = true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
 		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new ExchangeHeaders(exchange));
+		
 		return Weaver.callOriginal();
 	}
 
