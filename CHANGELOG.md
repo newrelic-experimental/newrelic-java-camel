@@ -1,3 +1,10 @@
+## Version: [v3.0.2](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v3.0.2) | Created: 2024-01-25
+### Bug Fixes
+- Ixed problems with distributed tracing headers
+- Ixed problems with camel netty instrumentation
+- Ixed problems with camel kafka instrumentation
+- Ixed problems with camel kafka instrumentation
+
 ## Version: [v3.0.1](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v3.0.1) | Created: 2024-01-08
 ### Bug Fixes
 - Ixes
