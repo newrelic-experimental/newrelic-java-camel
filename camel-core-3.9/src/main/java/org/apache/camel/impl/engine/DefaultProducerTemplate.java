@@ -14,9 +14,6 @@ import com.newrelic.api.agent.Trace;
 import com.newrelic.api.agent.TransactionNamePriority;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
-import com.nr.instrumentation.apache.camel.CamelHeaders;
-import com.nr.instrumentation.apache.camel.CamelMapHeaders;
-import com.nr.instrumentation.apache.camel.NRProcessorWrapper;
 import com.nr.instrumentation.apache.camel.Util;
 
 @Weave
@@ -27,17 +24,12 @@ public abstract class DefaultProducerTemplate {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, inExchange);
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-		CamelHeaders headers = new CamelHeaders(inExchange);
-		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
 		if(endpoint != null) {
 			String uri = endpoint.getEndpointUri();
 			if(uri != null && !uri.isEmpty()) {
 				NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_LOW, false, "Producer", "Custom","Producer",uri);
 				NewRelic.getAgent().getTracedMethod().addCustomAttribute("EndpointURI", uri);
 			}
-		}
-		if(resultProcessor != null && !(resultProcessor instanceof NRProcessorWrapper)) {
-			resultProcessor = new NRProcessorWrapper(resultProcessor, null);
 		}
 		return Weaver.callOriginal();
 	}
@@ -47,8 +39,7 @@ public abstract class DefaultProducerTemplate {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		Util.recordExchange(attributes, exchange);
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-		CamelHeaders headers = new CamelHeaders(exchange);
-		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
+		
 		if(endpoint != null) {
 			String uri = endpoint.getEndpointUri();
 			if(uri != null && !uri.isEmpty()) {
@@ -56,16 +47,7 @@ public abstract class DefaultProducerTemplate {
 				NewRelic.getAgent().getTracedMethod().addCustomAttribute("EndpointURI", uri);
 			}
 		}
-		if(resultProcessor != null && !(resultProcessor instanceof NRProcessorWrapper)) {
-			resultProcessor = new NRProcessorWrapper(resultProcessor, null);
-		}
 		return Weaver.callOriginal();
 	}
 
-
-	protected Processor createBodyAndHeaders(Object body, Map<String, Object> headers) {
-		CamelMapHeaders nrHeaders = new CamelMapHeaders(headers);
-		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(nrHeaders);
-		return Weaver.callOriginal();
-	}
 }

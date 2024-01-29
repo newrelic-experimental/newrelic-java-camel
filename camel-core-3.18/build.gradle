@@ -18,12 +18,11 @@ jar {
     attributes 'Implementation-Vendor': 'New Relic Labs'
     attributes 'Implementation-Vendor-Id': 'com.newrelic.labs'
     attributes 'Implementation-Version': 1.0
-    attributes 'Agent-Class': 'com.newrelic.instrumentation.labs.apache.camel.processors.CamelCorePremain'
   }
 }
 
 verifyInstrumentation {
-  passes 'org.apache.camel:camel-core:[3.18.0,4.0.0)'
+  passes 'org.apache.camel:camel-core:[3.18.0,4.0.0]'
   excludeRegex '.*M[1-9]'
   excludeRegex '.*RC[1-9]'
 }

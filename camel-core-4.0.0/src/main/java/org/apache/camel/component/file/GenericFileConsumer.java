@@ -20,8 +20,7 @@ public abstract class GenericFileConsumer<T> extends ScheduledBatchPollingConsum
 	protected GenericFileEndpoint<T> endpoint = Weaver.callOriginal();
 
 
-	protected GenericFileConsumer(GenericFileEndpoint<T> endpoint, Processor processor,
-			GenericFileOperations<T> operations, GenericFileProcessStrategy<T> processStrategy) {
+	protected GenericFileConsumer(GenericFileEndpoint<T> endpoint, Processor processor, GenericFileOperations<T> operations, GenericFileProcessStrategy<T> processStrategy) {
 		super( endpoint, processor);
 	}
 

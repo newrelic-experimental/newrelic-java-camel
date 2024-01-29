@@ -16,8 +16,7 @@ import io.netty.channel.ChannelFutureListener;
 public class NettyHelper {
 
 	@Trace
-	public static void writeBodyAsync(
-            Logger log, Channel channel, SocketAddress remoteAddress, Object body,
+	public static void writeBodyAsync(Logger log, Channel channel, SocketAddress remoteAddress, Object body,
             ChannelFutureListener listener) {
 		NewRelic.getAgent().getTracedMethod().addCustomAttribute("Body-Class", body.getClass().getName());
 		NewRelic.getAgent().getTracedMethod().addCustomAttribute("Channel-Type", channel.getClass().getName());

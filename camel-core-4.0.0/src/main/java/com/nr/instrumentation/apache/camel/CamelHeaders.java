@@ -50,6 +50,11 @@ public class CamelHeaders implements Headers {
 	@Override
 	public Collection<String> getHeaderNames() {
 		Map<String, Object> props = exchange.getProperties();
+		Message msg = exchange.getMessage();
+		if(msg != null) {
+			Map<String, Object> msgHeaders = msg.getHeaders();
+			props.putAll(msgHeaders);
+		}
 		
 		return props != null ? props.keySet() : Collections.emptyList();
 	}

@@ -10,11 +10,9 @@ import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Segment;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
-import com.newrelic.api.agent.TransportType;
 import com.newrelic.api.agent.weaver.NewField;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
-import com.newrelic.instrumentation.labs.camel.netty.ExchangeHeaders;
 
 import io.netty.channel.ChannelFuture;
 
@@ -25,7 +23,6 @@ public abstract class NettyProducer {
 
 	@Trace(dispatcher = true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
-//		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new ExchangeHeaders(exchange));
 		if(configuration != null) {
 			String host = configuration.getHost();
 			int port = configuration.getPort();
@@ -48,13 +45,6 @@ public abstract class NettyProducer {
 		Weaver.callOriginal();
 	}
 
-
-	@SuppressWarnings("unused")
-	private boolean processWithBody(final Exchange exchange, Object body, BodyReleaseCallback callback) {
-//		ExchangeHeaders headers = new ExchangeHeaders(exchange);
-//		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
-		return Weaver.callOriginal();
-	}
 
 	@Weave
 	private static class ChannelConnectedListener {
