@@ -1,56 +1,42 @@
 package com.nr.instrumentation.apache.camel;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.apache.camel.DelegateProcessor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.Route;
 
 import com.newrelic.agent.bridge.AgentBridge;
-import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
-import com.newrelic.api.agent.TransactionNamePriority;
-import com.newrelic.api.agent.TransportType;
 
-public class NRProcessorWrapper implements Processor {
+public class NRProcessorWrapper implements DelegateProcessor {
 	
-	private static boolean isTransformed = false;
-	protected Route route = null;
+	protected Token token = null;
+	private Processor delegate = null;
+	protected static boolean isTransformed = false;
+
 	
-	protected Processor delegate = null;
-	
-	public NRProcessorWrapper(Processor p,Route r) {
-		delegate = p;
-		route = r;
+	public NRProcessorWrapper(Processor d, Token t) {
+		token = t;
+		delegate = d;
 		if(!isTransformed) {
 			AgentBridge.instrumentation.retransformUninstrumentedClass(getClass());
+			isTransformed = true;
 		}
 	}
 
 	@Override
-	@Trace(dispatcher=true)
+	@Trace(async = true)
 	public void process(Exchange exchange) throws Exception {
-		Map<String, Object> attributes = new HashMap<String, Object>();
-		Util.recordExchange(attributes, exchange);
-		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
-		if(route != null) {
-			String routeId = route.getId();
-			if(routeId != null && !routeId.isEmpty()) {
-				NewRelic.getAgent().getTracedMethod().addCustomAttribute("RouteId", routeId);
-				NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Consumer","Processor",delegate.getClass().getSimpleName(),"process",routeId);
-				NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_HIGH, false, "Camel-Consumer", "Consumer","Route",routeId);
-			} else {
-				NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Consumer","Processor",delegate.getClass().getSimpleName(),"process");
-			}
-		} else {
-			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Producer","Processor",delegate.getClass().getSimpleName(),"process");
+		if(token != null) {
+			token.linkAndExpire();
+			token = null;
 		}
-		if(delegate != null) {
-			delegate.process(exchange);
-		}
+		delegate.process(exchange);
+	}
 
+	@Override
+	public Processor getProcessor() {
+		return delegate;
 	}
 
 }

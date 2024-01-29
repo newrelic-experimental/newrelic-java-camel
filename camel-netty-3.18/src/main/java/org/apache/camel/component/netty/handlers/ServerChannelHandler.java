@@ -62,8 +62,6 @@ public abstract class ServerChannelHandler {
 		HashMap<String, Object> attributes = new HashMap<>();
 		Util.recordExchange(attributes, exchange);
 		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
-//		ExchangeHeaders headers = new ExchangeHeaders(exchange);
-//		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(headers);
 		Weaver.callOriginal();
 	}
 	

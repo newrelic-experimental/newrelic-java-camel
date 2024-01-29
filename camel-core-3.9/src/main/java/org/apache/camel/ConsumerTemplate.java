@@ -7,7 +7,7 @@ import com.newrelic.api.agent.TransportType;
 import com.newrelic.api.agent.weaver.MatchType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
-import com.nr.instrumentation.apache.camel.CamelMessageHeaders;
+import com.nr.instrumentation.apache.camel.CamelHeaders;
 
 @Weave(type = MatchType.Interface)
 public abstract class ConsumerTemplate {
@@ -16,10 +16,13 @@ public abstract class ConsumerTemplate {
 	public Exchange receive(String endpointUri) {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpointUri);
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receive");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receive");
 		Exchange exchange = Weaver.callOriginal();
-		Message message = exchange.getMessage();
-		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelMessageHeaders(message));
+		if(exchange != null) {
+			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
+		} else {
+			NewRelic.getAgent().getTransaction().ignore();
+		}
 		return exchange;
 	}
 	
@@ -27,11 +30,10 @@ public abstract class ConsumerTemplate {
 	public Exchange receive(String endpointUri, long timeout) {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpointUri);
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receive");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receive");
 		Exchange exchange = Weaver.callOriginal();
 		if (exchange != null) {
-			Message message = exchange.getMessage();
-			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelMessageHeaders(message));
+			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		} else {
 			NewRelic.getAgent().getTransaction().ignore();
 		}
@@ -42,10 +44,11 @@ public abstract class ConsumerTemplate {
 	public Exchange receive(Endpoint endpoint) {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpoint.getEndpointUri());
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receive");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receive");
 		Exchange exchange = Weaver.callOriginal();
-		Message message = exchange.getMessage();
-		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelMessageHeaders(message));
+		if (exchange != null) {
+			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
+		}
 		return exchange;
 	}
 	
@@ -53,11 +56,10 @@ public abstract class ConsumerTemplate {
 	public Exchange receive(Endpoint endpoint, long timeout) {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpoint.getEndpointUri());
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receive");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receive");
 		Exchange exchange = Weaver.callOriginal();
 		if (exchange != null) {
-			Message message = exchange.getMessage();
-			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelMessageHeaders(message));
+			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		} else {
 			NewRelic.getAgent().getTransaction().ignore();
 		}
@@ -68,11 +70,10 @@ public abstract class ConsumerTemplate {
 	public Exchange receiveNoWait(String endpointUri) {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpointUri);
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveNoWait");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveNoWait");
 		Exchange exchange = Weaver.callOriginal();
 		if (exchange != null) {
-			Message message = exchange.getMessage();
-			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelMessageHeaders(message));
+			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		} else {
 			NewRelic.getAgent().getTransaction().ignore();
 		}
@@ -83,11 +84,10 @@ public abstract class ConsumerTemplate {
 	public Exchange receiveNoWait(Endpoint endpoint) {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpoint.getEndpointUri());
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveNoWait");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveNoWait");
 		Exchange exchange = Weaver.callOriginal();
 		if (exchange != null) {
-			Message message = exchange.getMessage();
-			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelMessageHeaders(message));
+			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		} else {
 			NewRelic.getAgent().getTransaction().ignore();
 		}
@@ -98,7 +98,7 @@ public abstract class ConsumerTemplate {
 	public Object receiveBody(String endpointUri) {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpointUri);
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveBody");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveBody");
 		return Weaver.callOriginal();
 	}
 	
@@ -106,7 +106,7 @@ public abstract class ConsumerTemplate {
     public Object receiveBody(Endpoint endpoint) {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpoint.getEndpointUri());
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveBody");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveBody");
 		return Weaver.callOriginal();
     }
 
@@ -114,7 +114,7 @@ public abstract class ConsumerTemplate {
     public Object receiveBody(String endpointUri, long timeout){ 
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpointUri);
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveBody");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveBody");
 		Object result = Weaver.callOriginal();
 		if(result == null) {
 			traced.addCustomAttribute("TimedOut", true);
@@ -126,7 +126,7 @@ public abstract class ConsumerTemplate {
     public Object receiveBody(Endpoint endpoint, long timeout) {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpoint.getEndpointUri());
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveBody");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveBody");
 		Object result = Weaver.callOriginal();
 		if(result == null) {
 			traced.addCustomAttribute("TimedOut", true);
@@ -138,7 +138,7 @@ public abstract class ConsumerTemplate {
     public Object receiveBodyNoWait(String endpointUri) {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpointUri);
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveBodyNoWait");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveBodyNoWait");
 		Object result = Weaver.callOriginal();
 		if(result == null) {
 			traced.addCustomAttribute("NoObjectAvailable", true);
@@ -150,7 +150,7 @@ public abstract class ConsumerTemplate {
     public Object receiveBodyNoWait(Endpoint endpoint) {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpoint.getEndpointUri());
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveBodyNoWait");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveBodyNoWait");
 		Object result = Weaver.callOriginal();
 		if(result == null) {
 			traced.addCustomAttribute("NoObjectAvailable", true);
@@ -162,7 +162,7 @@ public abstract class ConsumerTemplate {
     public <T> T receiveBody(String endpointUri, Class<T> type) {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpointUri);
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveBody");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveBody");
 		return Weaver.callOriginal();
 	}
 
@@ -171,7 +171,7 @@ public abstract class ConsumerTemplate {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpoint.getEndpointUri());
 		traced.addCustomAttribute("BodyClass", type.getName());
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveBody");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveBody");
 		return Weaver.callOriginal();
 	}
 
@@ -180,7 +180,7 @@ public abstract class ConsumerTemplate {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpointUri);
 		traced.addCustomAttribute("BodyClass", type.getName());
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveBody");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveBody");
 		T result = Weaver.callOriginal();
 		if(result == null) {
 			traced.addCustomAttribute("TimedOut", true);
@@ -193,7 +193,7 @@ public abstract class ConsumerTemplate {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpoint.getEndpointUri());
 		traced.addCustomAttribute("BodyClass", type.getName());
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveBody");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveBody");
 		T result = Weaver.callOriginal();
 		if(result == null) {
 			traced.addCustomAttribute("TimedOut", true);
@@ -206,7 +206,7 @@ public abstract class ConsumerTemplate {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpointUri);
 		traced.addCustomAttribute("BodyClass", type.getName());
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveBodyNoWait");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveBodyNoWait");
 		T result = Weaver.callOriginal();
 		if(result == null) {
 			traced.addCustomAttribute("TimedOut", true);
@@ -219,7 +219,7 @@ public abstract class ConsumerTemplate {
 		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 		traced.addCustomAttribute("EndpointURI", endpoint.getEndpointUri());
 		traced.addCustomAttribute("BodyClass", type.getName());
-		traced.setMetricName("Custom","Camel","Consumer",getClass().getSimpleName(),"receiveBodyNoWait");
+		traced.setMetricName("Custom","Camel","ConsumerTemplate",getClass().getSimpleName(),"receiveBodyNoWait");
 		T result = Weaver.callOriginal();
 		if(result == null) {
 			traced.addCustomAttribute("TimedOut", true);

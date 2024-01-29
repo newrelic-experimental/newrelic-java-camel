@@ -1,15 +1,13 @@
 package com.nr.instrumentation.apache.camel;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Trace;
-import com.newrelic.api.agent.TracedMethod;
+import com.newrelic.api.agent.TransactionNamePriority;
 import com.newrelic.api.agent.TransportType;
 import com.newrelic.api.agent.weaver.MatchType;
 import com.newrelic.api.agent.weaver.Weave;
@@ -20,19 +18,16 @@ public abstract class CamelInternalProcessor_instrumentation {
 
 	@Trace(dispatcher = true)
 	public boolean process(Exchange exchange, AsyncCallback callback) {
-		Map<String, Object> attributes = new HashMap<String, Object>();
+		HashMap<String, Object> attributes = new HashMap<>();
 		Util.recordExchange(attributes, exchange);
-		TracedMethod traced = NewRelic.getAgent().getTracedMethod();
-		if(exchange != null && exchange.getFromRouteId() != null) {
-			traced.setMetricName("Custom","CamelInternalProcessor","process",exchange.getFromRouteId());
+		NewRelic.getAgent().getTracedMethod().addCustomAttributes(attributes);
+		String routeId = exchange != null ?  exchange.getFromRouteId() : null;
+		if(exchange != null) {
+			NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		}
-		if(!attributes.isEmpty()) {
-			traced.addCustomAttributes(attributes);
+		if(routeId != null && !routeId.isEmpty()) {
+			NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_LOW, false, "CamelInternalProcessor", "Camel",getClass().getSimpleName(),routeId);
 		}
-		Message message = exchange.getMessage();
-		
-		
-		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelMessageHeaders(message));
 		return Weaver.callOriginal();
 	}
 }
