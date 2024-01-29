@@ -12,8 +12,6 @@ import com.newrelic.api.agent.TracedMethod;
 import com.newrelic.api.agent.weaver.MatchType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
-import com.nr.instrumentation.apache.camel.CamelHeaders;
-import com.nr.instrumentation.apache.camel.NRProcessorWrapper;
 import com.nr.instrumentation.apache.camel.Util;
 
 @Weave(type = MatchType.Interface)
@@ -30,10 +28,6 @@ public abstract class ProducerCache {
 			attributes.put("EndpointURI", baseURI);
 		}
 		traced.addCustomAttributes(attributes);
-		if(resultProcessor != null && !(resultProcessor instanceof NRProcessorWrapper)) {
-			resultProcessor = new NRProcessorWrapper(resultProcessor, null);
-		}
-		NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(new CamelHeaders(exchange));
 		return Weaver.callOriginal();
 	}
 }

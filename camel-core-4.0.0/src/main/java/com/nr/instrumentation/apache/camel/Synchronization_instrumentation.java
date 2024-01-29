@@ -29,6 +29,7 @@ public abstract class Synchronization_instrumentation {
 		
 		@Trace(async=true)
 		public void onComplete(Exchange exchange) {
+			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Camel","Synchronization",getClass().getSimpleName(),"onComplete");
 			if(token != null) {
 				token.linkAndExpire();
 				token = null;
@@ -38,6 +39,7 @@ public abstract class Synchronization_instrumentation {
 		
 		@Trace(async=true)
 		public void onFailure(Exchange exchange) {
+			NewRelic.getAgent().getTracedMethod().setMetricName("Custom","Camel","Synchronization",getClass().getSimpleName(),"onFailure");
 			if(token != null) {
 				token.linkAndExpire();
 				token = null;

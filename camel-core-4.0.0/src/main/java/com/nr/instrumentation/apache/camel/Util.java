@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.camel.AsyncProcessor;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeExtension;
+import org.apache.camel.Processor;
 
 import com.newrelic.agent.bridge.AgentBridge;
 import com.newrelic.api.agent.NewRelic;
@@ -19,7 +21,7 @@ import com.newrelic.api.agent.Token;
 public class Util {
 
 	private static final List<String> ignores;
-	
+
 	static {
 		ignores = new ArrayList<>();
 		ignores.add("org.apache.camel.impl.engine.CamelInternalProcessor$AsyncAfterTask");
@@ -29,13 +31,13 @@ public class Util {
 	public static boolean isTranscationActive() {
 		return AgentBridge.getAgent().getTransaction().isStarted();
 	}
-	
+
 	public static NRRunnable getRunnable(Runnable runnable) {
 		String classname = runnable.getClass().getName();
 		if(ignores.contains(classname)) return null;
-		
+
 		if(runnable instanceof NRRunnable) return (NRRunnable)runnable;
-		
+
 		Token token = NewRelic.getAgent().getTransaction().getToken();
 		if(token != null && token.isActive()) {
 			return new NRRunnable(runnable, token);
@@ -43,10 +45,10 @@ public class Util {
 			token.expire();
 			token = null;
 		}
-		
+
 		return null;
 	}
-	
+
 	public static String getMethodName(Method m) {
 		if(m == null) return "UnknownClass.UnknownMethod";
 
@@ -74,7 +76,7 @@ public class Util {
 			}
 		}
 	}
-	
+
 	private static void recordExtendedExchange(Map<String, Object> attributes, ExchangeExtension exchange) {
 		if(exchange != null) {
 			recordValue(attributes, "HistoryNodeId", exchange.getHistoryNodeId());
@@ -91,7 +93,7 @@ public class Util {
 
 		}
 	}
-	
+
 	public static void recordValue(Map<String,Object> attributes, String key, Object value) {
 		if(key != null && !key.isEmpty() && value != null) {
 			attributes.put(key, value);
@@ -107,5 +109,51 @@ public class Util {
 			recordValue(attributes, key, properties.get(key));
 		}
 		NewRelic.getAgent().getInsights().recordCustomEvent("Pipeline_Exchange", attributes);
+	}
+	public static NRAsyncProcessorWrapper getWrapper(AsyncProcessor processor) {
+		if(processor == null) return null;
+		// no need for wrapper
+		if((processor instanceof NRAsyncProcessorWrapper)) return null;
+
+		Token t = NewRelic.getAgent().getTransaction().getToken();
+		if(t != null && t.isActive()) {
+			return new NRAsyncProcessorWrapper(processor, t);
+		} else if(t != null) {
+			t.expire();
+			t = null;
+		}
+		return null;
+	}
+
+	public static NRProcessorWrapper getWrapper(Processor processor) {
+		if(processor == null) return null;
+		// no need for wrapper
+		if((processor instanceof NRAsyncProcessorWrapper)) return null;
+
+		if((processor instanceof NRProcessorWrapper)) return null;
+
+		Token t = NewRelic.getAgent().getTransaction().getToken();
+		if(t != null && t.isActive()) {
+			return new NRProcessorWrapper(processor, t);
+		} else if(t != null) {
+			t.expire();
+			t = null;
+		}
+
+		return null;
+	}
+
+	public static NRAsyncProcessorStart getStartingWrapper(AsyncProcessor asyncProcessor) {
+		if(asyncProcessor == null) return null;
+		if(asyncProcessor instanceof NRAsyncProcessorStart) return null;
+
+		return new NRAsyncProcessorStart(asyncProcessor);
+	}
+
+	public static NRProcessorStart getStartingWrapper(Processor processor) {
+		if(processor == null) return null;
+		if(processor instanceof NRProcessorStart) return null;
+
+		return new NRProcessorStart(processor);
 	}
 }
