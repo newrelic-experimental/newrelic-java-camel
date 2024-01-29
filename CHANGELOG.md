@@ -1,3 +1,8 @@
+## Version: [v3.0.3](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v3.0.3) | Created: 2024-01-29
+### Bug Fixes
+- Ixed further problems with distributed tracing headers
+- Ixed further problems with distributed tracing headers
+
 ## Version: [v3.0.2](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v3.0.2) | Created: 2024-01-25
 ### Bug Fixes
 - Ixed problems with distributed tracing headers
