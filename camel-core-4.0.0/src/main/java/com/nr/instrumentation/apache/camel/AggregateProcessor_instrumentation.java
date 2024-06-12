@@ -9,6 +9,7 @@ import org.apache.camel.Exchange;
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Trace;
 import com.newrelic.api.agent.TransactionNamePriority;
+import com.newrelic.api.agent.TransportType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
 
@@ -25,6 +26,7 @@ public abstract class AggregateProcessor_instrumentation {
 			NewRelic.getAgent().getTracedMethod().setMetricName(new String[] {"Custom","AggregateProcessor","doProcess",routeID});
 			NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_LOW, false, "CamelProcessor", new String[] {"AggregateProcessor",routeID});
 		}
+		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 		return Weaver.callOriginal();
 	}
 	
@@ -36,6 +38,7 @@ public abstract class AggregateProcessor_instrumentation {
 			NewRelic.getAgent().getTracedMethod().setMetricName(new String[] {"Custom","AggregateProcessor","doProcess",routeID});
 			NewRelic.getAgent().getTransaction().setTransactionName(TransactionNamePriority.FRAMEWORK_LOW, false, "CamelProcessor", new String[] {"AggregateProcessor",routeID});
 		}
+		NewRelic.getAgent().getTransaction().acceptDistributedTraceHeaders(TransportType.Other, new CamelHeaders(exchange));
 	
 		return Weaver.callOriginal();
 	}
