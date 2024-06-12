@@ -24,5 +24,5 @@ jar {
 }
 
 verifyInstrumentation {
-    passes 'org.apache.camel:camel-kafka:[3.11.0,3.12.0)'
+    passes 'org.apache.camel:camel-kafka:(2.22.0,3.12.0)'
  }
