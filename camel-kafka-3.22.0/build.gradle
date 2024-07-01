@@ -1,12 +1,12 @@
 
-// Build.gradle generated for instrumentation module camel-netty
+// Build.gradle generated for instrumentation module camel-kafka
 
 apply plugin: 'java'
 
-targetCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_17
 
 dependencies {
-   	implementation 'org.apache.camel:camel-netty:3.18.0'
+   	implementation 'org.apache.camel:camel-kafka:3.22.0'
 
    // New Relic Labs Java Agent dependencies
    implementation 'com.newrelic.agent.java:newrelic-agent:6.4.1'
@@ -16,7 +16,7 @@ dependencies {
 
 jar {
   manifest {
-    attributes 'Implementation-Title': 'com.newrelic.instrumentation.labs.camel-netty-3.18'
+    attributes 'Implementation-Title': 'com.newrelic.instrumentation.labs.camel-kafka-3.22.0'
     attributes 'Implementation-Vendor': 'New Relic Labs'
     attributes 'Implementation-Vendor-Id': 'com.newrelic.labs'
     attributes 'Implementation-Version': 1.0
@@ -24,5 +24,5 @@ jar {
 }
 
 verifyInstrumentation {
-	passes 'org.apache.camel:camel-netty:[3.18.0,)'
-}
+    passes 'org.apache.camel:camel-kafka:[3.22.0,4.4.0)'
+ }

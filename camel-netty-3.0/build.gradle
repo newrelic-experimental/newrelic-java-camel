@@ -22,5 +22,5 @@ jar {
 }
 
 verifyInstrumentation {
-	passes 'org.apache.camel:camel-netty:(3.0.1,3.18.0)'
+	passes 'org.apache.camel:camel-netty:(3.0.1,3.17.0)'
 }
