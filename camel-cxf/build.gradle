@@ -1,12 +1,11 @@
 
-// Build.gradle generated for instrumentation module camel-kafka
+// Build.gradle generated for instrumentation module camel-cfx
 
 apply plugin: 'java'
 
-targetCompatibility = JavaVersion.VERSION_17
-
 dependencies {
-   	implementation 'org.apache.camel:camel-kafka:3.22.0'
+   implementation group: 'org.apache.camel', name: 'camel-cxf', version: '3.0.0'
+
 
    // New Relic Labs Java Agent dependencies
    implementation 'com.newrelic.agent.java:newrelic-agent:6.4.1'
@@ -16,7 +15,7 @@ dependencies {
 
 jar {
   manifest {
-    attributes 'Implementation-Title': 'com.newrelic.instrumentation.labs.camel-kafka-3.22.0'
+    attributes 'Implementation-Title': 'com.newrelic.instrumentation.labs.camel-cfx'
     attributes 'Implementation-Vendor': 'New Relic Labs'
     attributes 'Implementation-Vendor-Id': 'com.newrelic.labs'
     attributes 'Implementation-Version': 1.0
@@ -24,5 +23,9 @@ jar {
 }
 
 verifyInstrumentation {
-    passes 'org.apache.camel:camel-kafka:[3.22.0,4.4.0)'
- }
+  // Verifier plugin documentation:
+  // https://github.com/newrelic/newrelic-gradle-verify-instrumentation
+  // Example:
+  // passes 'javax.servlet:servlet-api:[2.2,2.5]'
+  // exclude 'javax.servlet:servlet-api:2.4.public_draft'
+}
