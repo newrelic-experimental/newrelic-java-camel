@@ -1,3 +1,8 @@
+## Version: [v3.0.4](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v3.0.4) | Created: 2024-07-03
+### Bug Fixes
+- Added camel-kafka-3.22.0 and fixed build for camel-core-3.1
+- Ixed merge problem
+
 ## Version: [v3.0.3](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v3.0.3) | Created: 2024-01-29
 ### Bug Fixes
 - Ixed further problems with distributed tracing headers
