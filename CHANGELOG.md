@@ -1,9 +1,9 @@
 ## Version: [v3.0.5](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v3.0.5) | Created: 2024-11-20
 ### Bug Fixes
-- Ixed incorrect verify intervals
-- Ixed verify interval problems
-- Ixed verify interval problems
-- Erge pull request #26 from newrelic-experimental/fix_verify_intervals
+- Fixed incorrect verify intervals
+- Fixed verify interval problems
+- Fixed verify interval problems
+- Merge pull request #26 from newrelic-experimental/fix_verify_intervals
 
 ## Version: [v3.0.4](https://github.com/newrelic-experimental/newrelic-java-camel/releases/tag/v3.0.4) | Created: 2024-07-03
 ### Bug Fixes
