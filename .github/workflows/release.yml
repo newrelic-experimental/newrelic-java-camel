@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          persist-credentials: true
           fetch-depth: 0
           
 
@@ -177,8 +177,9 @@ jobs:
           
           # Commit the updated CHANGELOG.md file
            git add CHANGELOG.md
-           git config --local user.email "action@github.com"
-           git config --local user.name "GitHub Action"
+
+           git config  user.email "${{ env.THIRD_PARTY_GIT_AUTHOR_EMAIL }}"
+           git config  user.name "${{ env.THIRD_PARTY_GIT_AUTHOR_NAME }}"
            git commit -m "Update Changelog for Release [skip ci]"
 
           # Push the changes to the remote repository
