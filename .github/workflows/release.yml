@@ -36,8 +36,7 @@ jobs:
 
       - name: Build with Gradle and No verifyInstrumentation [ Needs High Memory]
         run: |
-          . ./newrelic-dependencies.sh
-          ./gradlew clean build install 
+          ./gradlew clean build install
 
       - name: Identify Release Type
         id: define_release_type
@@ -183,7 +182,7 @@ jobs:
            git commit -m "Update Changelog for Release [skip ci]"
 
           # Push the changes to the remote repository
-           git push --quiet --set-upstream origin HEAD
+           # git push --quiet --set-upstream origin HEAD
       
       - name: Get Compare URL
         run: |

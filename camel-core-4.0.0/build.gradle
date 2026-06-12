@@ -1,15 +1,21 @@
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 // Build.gradle generated for instrumentation module camel-core-3.9
 
-targetCompatibility = JavaVersion.VERSION_17
+
 
 dependencies {
    implementation 'org.apache.camel:camel-core:4.0.0'
 
    // New Relic Labs Java Agent dependencies
-   implementation 'com.newrelic.agent.java:newrelic-agent:7.5.0'
-   implementation 'com.newrelic.agent.java:newrelic-api:7.5.0'
-   implementation fileTree(include: ['*.jar'], dir: '../libs')
+   implementation 'com.newrelic.agent.java:newrelic-agent:' + project.findProperty('java.agent.version')
+   implementation 'com.newrelic.agent.java:newrelic-api:' + project.findProperty('java.agent.version')
+   implementation 'com.newrelic.agent.java:agent-bridge:' + project.findProperty('java.agent.version')
 }
 
 jar {
@@ -22,7 +28,7 @@ jar {
 }
 
 verifyInstrumentation {
-  passes 'org.apache.camel:camel-core:[4.0.0,)'
+  passesOnly 'org.apache.camel:camel-core:[4.0.0,)'
   excludeRegex '.*M[1-9]'
   excludeRegex '.*RC[1-9]'
 }
