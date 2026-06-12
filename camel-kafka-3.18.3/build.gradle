@@ -30,5 +30,5 @@ jar {
 }
 
 verifyInstrumentation {
-    passesOnly 'org.apache.camel:camel-kafka:[3.18.3,3.21.4)'
+    passes 'org.apache.camel:camel-kafka:[3.18.3,3.21.4)'
  }

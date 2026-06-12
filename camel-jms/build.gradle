@@ -23,7 +23,7 @@ jar {
 }
 
 verifyInstrumentation {
-  passesOnly 'org.apache.camel:camel-jms:[2.16.0,3.18.0)'
+  passesOnly 'org.apache.camel:camel-jms:[2.6.0,3.18.0)'
   excludeRegex '.*M[1-9]'
   excludeRegex '.*RC[1-9]'
 }
