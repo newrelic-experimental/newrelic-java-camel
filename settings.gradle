@@ -1,4 +1,4 @@
-rootProject.name = 'java-instrumentation-template'
+rootProject.name = 'camel-instrumentation'
 include 'camel-core-2.18'
 include 'camel-core-2.20'
 include 'camel-core-3.0'
